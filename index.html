@@ -1134,9 +1134,22 @@
                     <button class="icon-btn" id="themeToggle" title="Toggle Theme (Ctrl+D)" aria-label="Toggle dark mode">
                         <i class="fas fa-moon"></i>
                     </button>
-                    <div class="status" id="status">
-                        <span class="status-dot"></span>
-                        <span>Connected</span>
+
+                    <!-- Training controls -->
+                    <button class="icon-btn" id="trainingToggle" title="Toggle Training">
+                        <i class="fas fa-brain"></i>
+                        <span id="trainingToggleText">Train</span>
+                    </button>
+
+                    <div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end;margin-left:8px;">
+                        <div class="status" id="status">
+                            <span class="status-dot"></span>
+                            <span>Connected</span>
+                        </div>
+                        <div style="font-size:12px;color:var(--text-secondary);text-align:right;line-height:1.1">
+                            <div id="trainingStatus">Training: Off</div>
+                            <div id="modelStatus">Model: Not trained</div>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -2205,6 +2218,56 @@
         // ========================================
         // EVENT LISTENERS
         // ========================================
+        // ========================================
+        // TRAINING MANAGER
+        // ========================================
+        const TrainingManager = {
+            status: { trainingMode: false, modelTrained: false, trainingSamples: 0 },
+
+            async fetchStatus() {
+                try {
+                    const res = await fetch('/api/training/status');
+                    if (!res.ok) return;
+                    const json = await res.json();
+                    this.status = json;
+                    this.updateUI();
+                } catch (e) {
+                    console.error('Failed to fetch training status', e);
+                }
+            },
+
+            updateUI() {
+                const trainingStatusEl = document.getElementById('trainingStatus');
+                const modelStatusEl = document.getElementById('modelStatus');
+                const toggleText = document.getElementById('trainingToggleText');
+                if (!trainingStatusEl || !modelStatusEl || !toggleText) return;
+                trainingStatusEl.textContent = `Training: ${this.status.trainingMode ? 'On' : 'Off'}`;
+                modelStatusEl.textContent = `Model: ${this.status.modelTrained ? 'Trained' : 'Not trained'}`;
+                toggleText.textContent = this.status.trainingMode ? 'Stop' : 'Train';
+            },
+
+            async toggle() {
+                try {
+                    const endpoint = this.status.trainingMode ? '/api/training/disable' : '/api/training/enable';
+                    const res = await fetch(endpoint, { method: 'POST' });
+                    if (!res.ok) throw new Error('Request failed');
+                    await this.fetchStatus();
+                } catch (e) {
+                    console.error('Error toggling training', e);
+                    Toast.show('Training Error', 'Failed to toggle training mode', 'error');
+                }
+            },
+
+            init() {
+                // attach UI handler
+                const btn = document.getElementById('trainingToggle');
+                if (btn) btn.addEventListener('click', () => this.toggle());
+
+                // initial fetch and poll
+                this.fetchStatus();
+                this._interval = setInterval(() => this.fetchStatus(), 5000);
+            }
+        };
         function initEventListeners() {
             // Theme toggle
             document.getElementById('themeToggle').addEventListener('click', () => Theme.toggle());
@@ -2273,6 +2336,7 @@
             Shortcuts.init();
             WebSocketManager.init();
             initEventListeners();
+            TrainingManager.init();
             
             // Load saved state
             State.load();
