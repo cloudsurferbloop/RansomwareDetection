@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced Ransomware Detection System with Machine Learning
-Combines rule-based detection with Isolation Forest anomaly detection
+Ransomware Detection System with ML
+Combines rule-based detection with Isolation Forest
 """
 
 import os
@@ -16,6 +16,8 @@ from collections import defaultdict, deque
 from flask import Flask, request, jsonify, send_file
 from flask_socketio import SocketIO, emit
 from werkzeug.utils import secure_filename
+
+# Try importing sklearn, fall back if not available
 try:
     from sklearn.ensemble import IsolationForest
     from sklearn.preprocessing import StandardScaler
@@ -27,7 +29,6 @@ except Exception:
     print('scikit-learn not available; using fallback ML detector')
 import threading
 
-# Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -37,12 +38,12 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'dev-key-change-in-production')
 app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_DIR', 'uploads')
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 app.config['MODEL_DIR'] = 'models'
 
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
-# Create necessary directories
+# Make sure directories exist
 for folder in [app.config['UPLOAD_FOLDER'], app.config['MODEL_DIR']]:
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -50,23 +51,20 @@ for folder in [app.config['UPLOAD_FOLDER'], app.config['MODEL_DIR']]:
 
 
 class FeatureExtractor:
-    """
-    Extracts behavioral features from file activity windows
-    These features represent system behavior patterns
-    """
+    """Extracts features from file activity for ML detection"""
     
     def __init__(self, window_seconds=10):
         self.window_seconds = window_seconds
-        self.activity_window = deque(maxlen=1000)  # Store recent activity
+        self.activity_window = deque(maxlen=1000)
+        # Common file types targeted by ransomware
         self.high_value_extensions = {
             '.docx', '.pdf', '.xlsx', '.jpg', '.jpeg', '.png', 
             '.db', '.sql', '.txt', '.pptx', '.zip', '.rar'
         }
         
     def add_activity(self, activity_type, filepath, entropy=0.0):
-        """Record a file activity event"""
         self.activity_window.append({
-            'type': activity_type,  # 'modified', 'renamed', 'deleted'
+            'type': activity_type,
             'path': filepath,
             'entropy': entropy,
             'timestamp': time.time(),
@@ -74,55 +72,40 @@ class FeatureExtractor:
         })
     
     def _is_high_value_file(self, filepath):
-        """Check if file is a high-value target for ransomware"""
         ext = os.path.splitext(filepath)[1].lower()
         return ext in self.high_value_extensions
     
     def extract_features(self):
-        """
-        Extract feature vector from recent activity window
-        Returns 10-dimensional feature vector
-        """
+        """Extract 10 features from recent activity"""
         current_time = time.time()
         cutoff_time = current_time - self.window_seconds
         
-        # Filter to recent activity only
         recent_activity = [a for a in self.activity_window if a['timestamp'] >= cutoff_time]
         
         if not recent_activity:
             return np.zeros(10)
         
-        # Feature 1: Files modified count
         files_modified = sum(1 for a in recent_activity if a['type'] == 'modified')
-        
-        # Feature 2: Files renamed count
         files_renamed = sum(1 for a in recent_activity if a['type'] == 'renamed')
-        
-        # Feature 3: Files deleted count
         files_deleted = sum(1 for a in recent_activity if a['type'] == 'deleted')
         
-        # Feature 4: Average entropy of modified files
+        # Calculate average entropy
         modified_entropies = [a['entropy'] for a in recent_activity 
                              if a['type'] == 'modified' and a['entropy'] > 0]
         avg_entropy = np.mean(modified_entropies) if modified_entropies else 0.0
         
-        # Feature 5: High-value file ratio
         high_value_count = sum(1 for a in recent_activity if a['is_high_value'])
         high_value_ratio = high_value_count / len(recent_activity) if recent_activity else 0.0
         
-        # Feature 6: Modification rate (per second)
         modification_rate = files_modified / self.window_seconds
-        
-        # Feature 7: Rename rate (per second)
         rename_rate = files_renamed / self.window_seconds
         
-        # Feature 8: Directory spread depth (number of unique directories)
+        # How many different directories are affected
         unique_dirs = len(set(os.path.dirname(a['path']) for a in recent_activity))
         
-        # Feature 9: High entropy file count
         high_entropy_count = sum(1 for e in modified_entropies if e > 7.5)
         
-        # Feature 10: Activity burst indicator (binary)
+        # Detect activity bursts
         activity_burst = 1.0 if len(recent_activity) > 20 else 0.0
         
         feature_vector = np.array([
@@ -142,10 +125,7 @@ class FeatureExtractor:
 
 
 class MLAnomalyDetector:
-    """
-    Machine Learning component using Isolation Forest
-    Detects anomalies in system behavior patterns
-    """
+    """ML-based anomaly detection using Isolation Forest"""
     
     def __init__(self, contamination=0.1):
         self.is_trained = False
@@ -158,7 +138,6 @@ class MLAnomalyDetector:
         ]
 
         if SKLEARN_AVAILABLE:
-            # Proper ML model when scikit-learn is present
             self.model = IsolationForest(
                 contamination=contamination,
                 random_state=42,
@@ -168,24 +147,19 @@ class MLAnomalyDetector:
             )
             self.scaler = StandardScaler()
         else:
-            # Fallback: no sklearn available — use a lightweight heuristic detector
+            # Fallback when sklearn isn't available
             self.model = None
             self.scaler = None
-            # Mark as 'trained' so predict() will run using the fallback heuristic
-            self.is_trained = True
+            self.is_trained = True  # so predict() works with fallback
         
     def add_training_sample(self, feature_vector):
-        """Collect samples during normal operation for training"""
-        # If sklearn is present, collect samples; otherwise ignore (fallback)
+        """Add sample during training phase"""
         if SKLEARN_AVAILABLE:
             self.training_data.append(feature_vector)
             logger.debug(f"Training sample collected. Total: {len(self.training_data)}")
     
     def train(self, min_samples=50):
-        """
-        Train the model on collected normal behavior
-        Should be called after collecting enough normal samples
-        """
+        """Train model on collected samples"""
         if not SKLEARN_AVAILABLE:
             logger.info("SKLearn not available — skipping ML training (using fallback heuristic)")
             self.is_trained = True
@@ -196,11 +170,7 @@ class MLAnomalyDetector:
             return False
 
         X = np.array(self.training_data)
-
-        # Normalize features
         X_scaled = self.scaler.fit_transform(X)
-
-        # Train Isolation Forest
         self.model.fit(X_scaled)
         self.is_trained = True
 
@@ -209,40 +179,34 @@ class MLAnomalyDetector:
     
     def predict(self, feature_vector):
         """
-        Predict if current behavior is anomalous
-        Returns: (anomaly_score, is_anomaly)
-        anomaly_score: continuous value (higher = more anomalous)
-        is_anomaly: boolean (True if anomaly detected)
+        Predict if behavior is anomalous
+        Returns (anomaly_score, is_anomaly)
         """
         if not self.is_trained:
             logger.warning("Model not trained yet. Returning neutral prediction.")
             return 0.0, False
 
-        # If sklearn available, use IsolationForest
+        # Use sklearn model if available
         if SKLEARN_AVAILABLE and self.model is not None and self.scaler is not None:
             X = feature_vector.reshape(1, -1)
             X_scaled = self.scaler.transform(X)
 
-            # Get anomaly score (more negative = more anomalous)
             anomaly_score = self.model.score_samples(X_scaled)[0]
-
-            # Predict anomaly (-1 = anomaly, 1 = normal)
             prediction = self.model.predict(X_scaled)[0]
             is_anomaly = (prediction == -1)
 
-            # Normalize score to 0-1 range (higher = more anomalous)
+            # normalize score to 0-1
             normalized_score = max(0, -anomaly_score) / 2.0
 
             return normalized_score, is_anomaly
 
-        # Fallback heuristic (no sklearn): compute simple rule-based anomaly score
+        # Simple heuristic fallback
         try:
             fv = np.asarray(feature_vector, dtype=float).ravel()
         except Exception:
             fv = np.array(feature_vector, dtype=float)
 
-        # Features positions known from extractor:
-        # 3: avg_entropy (0-8), 0: files_modified, 5: modification_rate, 9: activity_burst
+        # Basic scoring based on key features
         avg_entropy = float(fv[3]) if len(fv) > 3 else 0.0
         files_modified = float(fv[0]) if len(fv) > 0 else 0.0
         modification_rate = float(fv[5]) if len(fv) > 5 else 0.0
@@ -259,7 +223,6 @@ class MLAnomalyDetector:
         return float(score), bool(is_anomaly)
     
     def save_model(self, filepath):
-        """Save trained model to disk"""
         if not self.is_trained:
             logger.warning("Cannot save untrained model")
             return False
@@ -282,7 +245,6 @@ class MLAnomalyDetector:
             return False
     
     def load_model(self, filepath):
-        """Load trained model from disk"""
         if not os.path.exists(filepath):
             logger.warning(f"Model file not found: {filepath}")
             return False
@@ -296,7 +258,7 @@ class MLAnomalyDetector:
                 self.feature_names = model_data.get('feature_names', self.feature_names)
                 self.is_trained = True
             else:
-                # Fallback loaded (or sklearn not available): just mark trained
+                # fallback mode
                 self.model = None
                 self.scaler = None
                 self.feature_names = model_data.get('feature_names', self.feature_names)
@@ -310,29 +272,27 @@ class MLAnomalyDetector:
 
 
 class EnhancedRansomwareDetector:
-    """
-    Enhanced detection system combining rule-based and ML approaches
-    """
+    """Main detector combining rules and ML"""
     
     def __init__(self):
-        # Rule-based detection components
+        # Known ransomware extensions
         self.suspicious_extensions = [
             '.encrypted', '.locked', '.crypto', '.crypt', 
             '.crypted', '.enc', '.ransomware', '.cerber',
             '.locky', '.zepto', '.thor', '.aaa', '.abc'
         ]
         
+        # Keywords commonly found in ransom notes
         self.ransom_note_keywords = [
             'ransom', 'bitcoin', 'decrypt', 'payment', 'btc', 
             'restore', 'recover', 'unlock', 'crypto', 'wallet',
             'encryption', 'encrypted', 'pay', 'deadline'
         ]
         
-        # ML components
         self.feature_extractor = FeatureExtractor(window_seconds=10)
         self.ml_detector = MLAnomalyDetector(contamination=0.1)
         
-        # Risk scoring weights
+        # Risk scoring weights - TODO: tune these based on real data
         self.weights = {
             'extension': 30,
             'keyword': 25,
@@ -342,35 +302,30 @@ class EnhancedRansomwareDetector:
             'rename_burst': 25
         }
         
-        self.risk_threshold = 70  # Total risk score threshold for alert
-        
-        # Training mode flag
+        self.risk_threshold = 70
         self.training_mode = False
         
         self.reset_stats()
         
     def enable_training_mode(self):
-        """Enable training mode to collect normal behavior samples"""
         self.training_mode = True
         logger.info("Training mode ENABLED - collecting normal behavior samples")
     
     def disable_training_mode(self):
-        """Disable training mode and train the ML model"""
         self.training_mode = False
         success = self.ml_detector.train()
         if success:
             logger.info("Training mode DISABLED - model trained successfully")
-            # Save the trained model
             model_path = os.path.join(app.config['MODEL_DIR'], 'ransomware_model.pkl')
             self.ml_detector.save_model(model_path)
         else:
             logger.warning("Training mode DISABLED - insufficient data to train model")
     
     def calc_file_entropy(self, filepath):
-        """Calculate Shannon entropy - high entropy suggests encryption"""
+        """Calculate Shannon entropy of file - encrypted files have high entropy"""
         try:
             with open(filepath, 'rb') as f:
-                data = f.read(8192)
+                data = f.read(8192)  # read first 8KB
             
             if len(data) == 0:
                 return 0.0, False
@@ -393,9 +348,7 @@ class EnhancedRansomwareDetector:
             return 0.0, False
     
     def analyze_file(self, filepath):
-        """
-        Main analysis function combining rule-based and ML detection
-        """
+        """Main analysis function"""
         flags = []
         entropy_value = 0.0
         risk_score = 0
@@ -406,7 +359,7 @@ class EnhancedRansomwareDetector:
         
         filename = os.path.basename(filepath).lower()
         
-        # Strip timestamp prefix if present
+        # Clean up display name (remove timestamp prefix if present)
         display_name = filename
         parts = filename.split('_', 2)
         if len(parts) >= 3 and parts[0].isdigit() and parts[1].isdigit():
@@ -414,9 +367,7 @@ class EnhancedRansomwareDetector:
         
         file_size = os.path.getsize(filepath)
         
-        # ========== RULE-BASED DETECTION ==========
-        
-        # Check 1: Suspicious file extensions
+        # Check for suspicious extensions
         extension_flagged = False
         for ext in self.suspicious_extensions:
             if filepath.lower().endswith(ext):
@@ -427,7 +378,7 @@ class EnhancedRansomwareDetector:
                 logger.warning(f"Suspicious extension detected: {ext} in {display_name}")
                 break
         
-        # Check 2: Ransom-related keywords
+        # Check for ransom keywords
         keyword_flagged = False
         for keyword in self.ransom_note_keywords:
             if keyword in display_name:
@@ -438,7 +389,7 @@ class EnhancedRansomwareDetector:
                 logger.warning(f"Ransom keyword '{keyword}' found in {display_name}")
                 break
         
-        # Check 3: File entropy analysis
+        # Entropy check
         entropy_flagged = False
         try:
             entropy_value, high_entropy = self.calc_file_entropy(filepath)
@@ -451,9 +402,7 @@ class EnhancedRansomwareDetector:
         except Exception as e:
             logger.error(f"Entropy check failed for {display_name}: {e}")
         
-        # ========== MACHINE LEARNING DETECTION ==========
-        
-        # Record activity and extract features
+        # ML detection
         self.feature_extractor.add_activity('modified', filepath, entropy_value)
         feature_vector = self.feature_extractor.extract_features()
         
@@ -461,12 +410,12 @@ class EnhancedRansomwareDetector:
         ml_score = 0.0
         
         if self.training_mode:
-            # In training mode: collect normal behavior samples
-            if risk_score == 0:  # Only collect clean samples
+            # Collect clean samples during training
+            if risk_score == 0:
                 self.ml_detector.add_training_sample(feature_vector)
                 logger.debug("Added sample to training data (normal behavior)")
         else:
-            # In detection mode: use ML model
+            # Use ML model for prediction
             ml_score, ml_anomaly_detected = self.ml_detector.predict(feature_vector)
             
             if ml_anomaly_detected:
@@ -478,9 +427,7 @@ class EnhancedRansomwareDetector:
                 self.stats['mlFlags'] += 1
                 logger.warning(f"ML anomaly detected for {display_name} (score: {ml_score:.2f})")
         
-        # ========== RISK ASSESSMENT ==========
-        
-        # Determine overall threat level
+        # Determine threat level
         if risk_score >= self.risk_threshold:
             threat_level = 'danger'
             self.stats['danger'] += 1
@@ -523,7 +470,6 @@ class EnhancedRansomwareDetector:
         return stats
     
     def reset_stats(self):
-        """Reset all counters"""
         self.stats = {
             'total': 0,
             'safe': 0,
@@ -541,7 +487,7 @@ class EnhancedRansomwareDetector:
 # Initialize detector
 detector = EnhancedRansomwareDetector()
 
-# Try to load existing model
+# Load existing model if available
 model_path = os.path.join(app.config['MODEL_DIR'], 'ransomware_model.pkl')
 if os.path.exists(model_path):
     detector.ml_detector.load_model(model_path)
@@ -550,7 +496,7 @@ if os.path.exists(model_path):
 
 @app.route('/')
 def index():
-    """Main page"""
+    """Serve main page"""
     html_path = 'index.html'
     if os.path.exists(html_path):
         return send_file(html_path)
@@ -567,7 +513,7 @@ def index():
 
 @app.route('/api/scan', methods=['POST'])
 def scan_file():
-    """Handle file upload and scanning"""
+    """Handle file upload and scan"""
     if 'files' not in request.files:
         return jsonify({'error': 'No files provided'}), 400
     
@@ -591,6 +537,7 @@ def scan_file():
                 results.append(result)
                 socketio.emit('file_scanned', result)
             
+            # Clean up
             os.remove(filepath)
             
         except Exception as e:
@@ -609,13 +556,11 @@ def scan_file():
 
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
-    """Return current statistics"""
     return jsonify(detector.get_stats())
 
 
 @app.route('/api/reset', methods=['POST'])
 def reset_stats():
-    """Clear all stats"""
     detector.reset_stats()
     socketio.emit('stats_reset', {})
     return jsonify({'success': True})
@@ -623,14 +568,12 @@ def reset_stats():
 
 @app.route('/api/training/enable', methods=['POST'])
 def enable_training():
-    """Enable training mode"""
     detector.enable_training_mode()
     return jsonify({'success': True, 'trainingMode': True})
 
 
 @app.route('/api/training/disable', methods=['POST'])
 def disable_training():
-    """Disable training mode and train model"""
     detector.disable_training_mode()
     return jsonify({
         'success': True, 
@@ -641,7 +584,6 @@ def disable_training():
 
 @app.route('/api/training/status', methods=['GET'])
 def training_status():
-    """Get training status"""
     return jsonify({
         'trainingMode': detector.training_mode,
         'modelTrained': detector.ml_detector.is_trained,
