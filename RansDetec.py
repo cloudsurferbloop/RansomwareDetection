@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+#!/usr/bin/env python3
+
 import os
 import time
 import math
@@ -85,6 +87,13 @@ class RansomwareDetector:
             return None
         
         filename = os.path.basename(filepath).lower()
+        
+        # Strip timestamp prefix if present (format: timestamp_index_originalname)
+        display_name = filename
+        parts = filename.split('_', 2)
+        if len(parts) >= 3 and parts[0].isdigit() and parts[1].isdigit():
+            display_name = parts[2]
+        
         file_size = os.path.getsize(filepath)
         
         # Check 1: Look for suspicious file extensions
@@ -94,17 +103,17 @@ class RansomwareDetector:
                 flags.append({'type': 'ext', 'text': f'Extension: {ext}'})
                 extension_flagged = True
                 self.stats['extensionFlags'] += 1
-                logger.warning(f"Suspicious extension detected: {ext} in {filename}")
+                logger.warning(f"Suspicious extension detected: {ext} in {display_name}")
                 break
         
         # Check 2: Scan filename for ransom-related keywords
         keyword_flagged = False
         for keyword in self.ransom_note_keywords:
-            if keyword in filename:
+            if keyword in display_name:
                 flags.append({'type': 'kw', 'text': f'Keyword: {keyword}'})
                 keyword_flagged = True
                 self.stats['keywordFlags'] += 1
-                logger.warning(f"Ransom keyword '{keyword}' found in {filename}")
+                logger.warning(f"Ransom keyword '{keyword}' found in {display_name}")
                 break
         
         # Check 3: Analyze file entropy
@@ -115,9 +124,9 @@ class RansomwareDetector:
                 flags.append({'type': 'ent', 'text': f'High entropy: {entropy_value}/8.0'})
                 entropy_flagged = True
                 self.stats['entropyFlags'] += 1
-                logger.warning(f"High entropy ({entropy_value}) detected in {filename}")
+                logger.warning(f"High entropy ({entropy_value}) detected in {display_name}")
         except Exception as e:
-            logger.error(f"Entropy check failed for {filename}: {e}")
+            logger.error(f"Entropy check failed for {display_name}: {e}")
         
         # Determine overall threat level based on flags
         flag_count = len(flags)
@@ -130,13 +139,13 @@ class RansomwareDetector:
         else:  # 2 or more flags
             threat_level = 'danger'
             self.stats['danger'] += 1
-            logger.error(f"THREAT DETECTED: {filename} has {flag_count} red flags!")
+            logger.error(f"THREAT DETECTED: {display_name} has {flag_count} red flags!")
         
         self.stats['total'] += 1
         self.stats['totalFlags'] += flag_count
         
         result = {
-            'name': os.path.basename(filepath),
+            'name': display_name,
             'size': file_size,
             'ent': entropy_value,
             'flags': flags,
@@ -147,7 +156,7 @@ class RansomwareDetector:
             'hasEnt': entropy_flagged
         }
         
-        logger.info(f"Scan complete: {filename} - {threat_level}")
+        logger.info(f"Scan complete: {display_name} - {threat_level}")
         return result
     
     def get_stats(self):
