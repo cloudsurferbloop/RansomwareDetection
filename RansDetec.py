@@ -659,7 +659,6 @@ def handle_connect():
 def handle_disconnect():
     logger.info('Client disconnected')
 
-
 if __name__ == '__main__':
     print("="*80)
     print("🛡️  ENHANCED RANSOMWARE DETECTION SYSTEM (ML-Enabled)")
