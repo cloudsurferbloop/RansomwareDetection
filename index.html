@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ransomware Detection</title>
+    <title>Ransomware Detection - Advanced</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,6 +22,10 @@
             --safe-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
+            --transition-speed: 0.3s;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
         }
 
         body.dark-theme {
@@ -45,11 +49,16 @@
             box-sizing: border-box;
         }
 
+        *:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg-secondary);
             color: var(--text-primary);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
         }
 
         .app {
@@ -57,12 +66,6 @@
             height: 100vh;
         }
 
-        /* Sidebar - Hidden */
-        .sidebar {
-            display: none;
-        }
-
-        /* Main */
         .main {
             flex: 1;
             overflow-y: auto;
@@ -77,7 +80,10 @@
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(8px);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         body.dark-theme .header {
@@ -97,23 +103,35 @@
             align-items: center;
         }
 
-        .theme-toggle {
+        .icon-btn {
             background: transparent;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: var(--border-radius-sm);
             padding: 10px 12px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 14px;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
             color: var(--text-primary);
+            font-weight: 600;
         }
 
-        .theme-toggle:hover {
+        .icon-btn:hover {
             color: var(--primary-color);
             border-color: var(--primary-color);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .icon-btn.danger:hover {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .icon-btn i {
+            font-size: 16px;
         }
 
         .status {
@@ -170,10 +188,10 @@
         .stat-card {
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
+            border-radius: var(--border-radius-lg);
             padding: 24px;
             position: relative;
-            transition: all 0.3s;
+            transition: all var(--transition-speed);
             box-shadow: var(--shadow-sm);
             overflow: hidden;
         }
@@ -190,21 +208,13 @@
             left: 0;
             right: 0;
             height: 4px;
-            border-radius: 16px 16px 0 0;
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
             background: var(--primary-color);
         }
 
-        .stat-card.safe::before {
-            background: var(--safe-color);
-        }
-
-        .stat-card.warning::before {
-            background: var(--warning-color);
-        }
-
-        .stat-card.danger::before {
-            background: var(--danger-color);
-        }
+        .stat-card.safe::before { background: var(--safe-color); }
+        .stat-card.warning::before { background: var(--warning-color); }
+        .stat-card.danger::before { background: var(--danger-color); }
 
         .stat-header {
             display: flex;
@@ -238,11 +248,11 @@
         .upload-section {
             background: var(--bg-primary);
             border: 2px dashed var(--border-color);
-            border-radius: 16px;
+            border-radius: var(--border-radius-lg);
             padding: 48px;
             text-align: center;
             margin-bottom: 32px;
-            transition: all 0.3s;
+            transition: all var(--transition-speed);
             cursor: pointer;
             position: relative;
         }
@@ -302,7 +312,7 @@
             background: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--border-radius-sm);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -323,6 +333,38 @@
             background: #6366f1;
         }
 
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
         /* Grid Layout */
         .grid {
             display: grid;
@@ -334,10 +376,10 @@
         .panel {
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
+            border-radius: var(--border-radius-lg);
             padding: 24px;
             box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
+            transition: all var(--transition-speed) ease;
             position: relative;
             overflow: hidden;
         }
@@ -370,11 +412,12 @@
             gap: 16px;
             padding: 16px;
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: var(--border-radius-md);
             margin-bottom: 12px;
             transition: all 0.2s;
             background: var(--bg-tertiary);
             position: relative;
+            cursor: pointer;
         }
 
         .file-item:hover {
@@ -387,15 +430,18 @@
             font-size: 32px;
             min-width: 32px;
             text-align: center;
-            color: var(--safe-color);
             font-weight: 700;
         }
 
-        .file-item.warning .file-status-icon {
+        .file-status-icon i {
+            color: var(--safe-color);
+        }
+
+        .file-item.warning .file-status-icon i {
             color: var(--warning-color);
         }
 
-        .file-item.danger .file-status-icon {
+        .file-item.danger .file-status-icon i {
             color: var(--danger-color);
         }
 
@@ -508,7 +554,7 @@
             width: 100%;
             padding: 10px 12px 10px 36px;
             border: 1.5px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: var(--border-radius-sm);
             background: var(--bg-tertiary);
             color: var(--text-primary);
             font-size: 14px;
@@ -537,7 +583,7 @@
             border: 1.5px solid transparent;
             background: var(--bg-tertiary);
             color: var(--text-secondary);
-            border-radius: 8px;
+            border-radius: var(--border-radius-sm);
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -566,7 +612,7 @@
         .risk-meter {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: var(--border-radius-md);
             padding: 20px;
             margin-bottom: 24px;
         }
@@ -584,7 +630,7 @@
             position: relative;
             height: 32px;
             background: var(--border-color);
-            border-radius: 8px;
+            border-radius: var(--border-radius-sm);
             overflow: hidden;
             margin-bottom: 12px;
         }
@@ -593,7 +639,7 @@
             height: 100%;
             background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
             width: 0%;
-            border-radius: 8px;
+            border-radius: var(--border-radius-sm);
             transition: width 0.6s ease;
             display: flex;
             align-items: center;
@@ -640,7 +686,7 @@
         .flag-stat {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: var(--border-radius-md);
             padding: 16px;
             text-align: center;
         }
@@ -677,6 +723,92 @@
             color: var(--text-primary);
         }
 
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-md);
+            animation: slideInBottom 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--safe-color);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast.success .toast-icon { color: var(--safe-color); }
+        .toast.error .toast-icon { color: var(--danger-color); }
+        .toast.warning .toast-icon { color: var(--warning-color); }
+        .toast.info .toast-icon { color: var(--primary-color); }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 18px;
+        }
+
+        @keyframes slideInBottom {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         /* Alert */
         .alert {
             position: fixed;
@@ -684,7 +816,7 @@
             right: 20px;
             background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             border: 2px solid #ef4444;
-            border-radius: 12px;
+            border-radius: var(--border-radius-md);
             padding: 20px;
             max-width: 400px;
             box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
@@ -761,6 +893,204 @@
             color: #fca5a5;
         }
 
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideInModal 0.3s ease;
+        }
+
+        @keyframes slideInModal {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .page-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+            color: var(--primary-color);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .loading-spinner.active {
+            display: flex;
+        }
+
+        .loading-spinner i {
+            font-size: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Keyboard Shortcuts Helper */
+        .shortcuts-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: 12px 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-sm);
+            display: none;
+        }
+
+        .shortcuts-hint.show {
+            display: block;
+            animation: slideInBottom 0.3s ease;
+        }
+
+        .kbd {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 11px;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .stats {
@@ -773,45 +1103,35 @@
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-            
             .stats {
                 grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .content {
+                padding: 16px;
             }
         }
     </style>
 </head>
 <body>
     <div class="app">
-        <aside class="sidebar">
-            <div class="brand">
-                <h2><span class="brand-icon"><i class="fas fa-shield-alt"></i></span> Detector</h2>
-            </div>
-            <nav class="nav">
-                <div class="nav-section">
-                    <div class="nav-label">Main</div>
-                    <div class="nav-item active">
-                        <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>
-                        Dashboard
-                    </div>
-                </div>
-                <div class="nav-section">
-                    <div class="nav-label">Tools</div>
-                    <div class="nav-item" onclick="clearAll()">
-                        <span class="nav-icon"><i class="fas fa-trash"></i></span>
-                        Clear All
-                    </div>
-                </div>
-            </nav>
-        </aside>
-
         <main class="main">
             <header class="header">
-                <h1>Ransomware Detection</h1>
+                <h1>🛡️ Ransomware Detection</h1>
                 <div class="header-right">
-                    <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                    <button class="icon-btn" onclick="FileScanner.exportResults()" title="Export Results (Ctrl+E)" aria-label="Export results">
+                        <i class="fas fa-download"></i>
+                        <span>Export</span>
+                    </button>
+                    <button class="icon-btn danger" onclick="UI.confirmClear()" title="Clear All (Ctrl+Shift+C)" aria-label="Clear all results">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Clear</span>
+                    </button>
+                    <button class="icon-btn" id="themeToggle" title="Toggle Theme (Ctrl+D)" aria-label="Toggle dark mode">
                         <i class="fas fa-moon"></i>
                     </button>
                     <div class="status" id="status">
@@ -881,8 +1201,22 @@
                             <i class="fas fa-folder-open"></i> Select Folder
                         </button>
                     </div>
-                    <input type="file" id="fileInput" multiple style="display: none">
-                    <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none">
+                    <input type="file" id="fileInput" multiple style="display: none" aria-label="Select files to scan">
+                    <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none" aria-label="Select folder to scan">
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Uploading... 0%</div>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loadingSpinner">
+                    <i class="fas fa-spinner"></i>
+                    <span>Scanning files...</span>
                 </div>
 
                 <!-- Grid -->
@@ -897,17 +1231,17 @@
                         <div class="search-filter-container">
                             <div class="search-box">
                                 <i class="fas fa-search"></i>
-                                <input type="text" id="searchInput" placeholder="Search files..." onkeyup="filterFileList()">
+                                <input type="text" id="searchInput" placeholder="Search files... (Ctrl+K)" aria-label="Search files">
                             </div>
-                            <div class="filter-buttons">
-                                <button class="filter-btn active" data-filter="all" onclick="setStatusFilter('all'); filterFileList()">All</button>
-                                <button class="filter-btn" data-filter="safe" onclick="setStatusFilter('safe'); filterFileList()">
+                            <div class="filter-buttons" id="filterButtons">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="safe">
                                     <i class="fas fa-check-circle"></i> Safe
                                 </button>
-                                <button class="filter-btn" data-filter="warning" onclick="setStatusFilter('warning'); filterFileList()">
+                                <button class="filter-btn" data-filter="warning">
                                     <i class="fas fa-exclamation-triangle"></i> Suspicious
                                 </button>
-                                <button class="filter-btn" data-filter="danger" onclick="setStatusFilter('danger'); filterFileList()">
+                                <button class="filter-btn" data-filter="danger">
                                     <i class="fas fa-exclamation-circle"></i> Threats
                                 </button>
                             </div>
@@ -918,6 +1252,17 @@
                                 <div class="empty-icon"><i class="fas fa-inbox"></i></div>
                                 <p>No files scanned yet</p>
                             </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination" id="pagination" style="display: none;">
+                            <button class="page-btn" id="prevPage" onclick="Pagination.prevPage()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="page-info" id="pageInfo">Page 1 of 1</span>
+                            <button class="page-btn" id="nextPage" onclick="Pagination.nextPage()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -965,500 +1310,991 @@
         </main>
     </div>
 
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- File Details Modal -->
+    <div class="modal-overlay" id="fileDetailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">File Details</h3>
+                <button class="modal-close" onclick="UI.closeModal()" aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="UI.closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Hint -->
+    <div class="shortcuts-hint" id="shortcutsHint">
+        Press <span class="kbd">?</span> for keyboard shortcuts
+    </div>
+
     <script>
-        // Animate counter values
-        function animateValue(id, end) {
-            const el = document.getElementById(id);
-            const start = parseInt(el.textContent) || 0;
-            const duration = 400;
-            const startTime = performance.now();
-
-            function update(currentTime) {
-                const progress = Math.min((currentTime - startTime) / duration, 1);
-                el.textContent = Math.floor(progress * (end - start) + start);
-                if (progress < 1) requestAnimationFrame(update);
+        // ========================================
+        // CONSTANTS & CONFIGURATION
+        // ========================================
+        const CONFIG = {
+            MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
+            ITEMS_PER_PAGE: 50,
+            DEBOUNCE_DELAY: 300,
+            TOAST_DURATION: 5000,
+            THREAT_THRESHOLDS: {
+                LOW: 33,
+                MEDIUM: 67,
+                HIGH: 100
+            },
+            WEIGHTS: {
+                DANGER_PERCENTAGE: 0.6,
+                FLAG_DENSITY: 0.4
             }
-
-            requestAnimationFrame(update);
-        }
-
-        // Theme initialization
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
-                updateThemeIcon(true);
-            }
-        }
-
-        function updateThemeIcon(isDark) {
-            const icon = document.getElementById('themeToggle').querySelector('i');
-            icon.classList.remove('fa-moon', 'fa-sun');
-            icon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
-        }
-
-        function toggleTheme() {
-            const isDark = document.body.classList.toggle('dark-theme');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateThemeIcon(isDark);
-            // Refresh chart with new colors
-            if (chart) {
-                chart.options.plugins.legend.labels.color = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
-                chart.update();
-            }
-        }
-
-        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-
-        // Initialize theme on page load
-        initTheme();
-
-        let state = {
-            total: 0,
-            safe: 0,
-            suspicious: 0,
-            danger: 0,
-            extensionFlags: 0,
-            keywordFlags: 0,
-            entropyFlags: 0,
-            totalFlags: 0,
-            fileHistory: []
         };
 
-        let currentStatusFilter = 'all';
-
-        // WebSocket connection
-        const socket = io();
-        
-        socket.on('connect', () => {
-            console.log('WebSocket connected');
-            document.getElementById('status').classList.remove('disconnected');
-            document.getElementById('status').querySelector('span:last-child').textContent = 'Connected';
-        });
-
-        socket.on('disconnect', () => {
-            console.log('WebSocket disconnected');
-            document.getElementById('status').classList.add('disconnected');
-            document.getElementById('status').querySelector('span:last-child').textContent = 'Disconnected';
-        });
-
-        socket.on('file_scanned', (result) => {
-            console.log('File scanned:', result);
-            state.fileHistory.push(result);
-            addToList(result);
-        });
-
-        socket.on('stats_reset', () => {
-            console.log('Stats reset by server');
-            state.total = 0;
-            state.safe = 0;
-            state.suspicious = 0;
-            state.danger = 0;
-            state.extensionFlags = 0;
-            state.keywordFlags = 0;
-            state.entropyFlags = 0;
-            state.totalFlags = 0;
-            state.fileHistory = [];
+        // ========================================
+        // STATE MANAGEMENT
+        // ========================================
+        const State = {
+            data: {
+                total: 0,
+                safe: 0,
+                suspicious: 0,
+                danger: 0,
+                extensionFlags: 0,
+                keywordFlags: 0,
+                entropyFlags: 0,
+                totalFlags: 0,
+                fileHistory: []
+            },
             
-            document.getElementById('fileList').innerHTML = `
-                <div class="empty">
-                    <div class="empty-icon">📂</div>
-                    <p>No files scanned yet</p>
-                </div>
-            `;
-            
-            document.getElementById('alert').classList.remove('show');
-            updateUI();
-        });
+            ui: {
+                currentFilter: 'all',
+                currentPage: 1,
+                searchQuery: ''
+            },
 
-        function dismissAlert() {
-            const alert = document.getElementById('alert');
-            alert.classList.add('hide');
-            setTimeout(() => {
-                alert.classList.remove('show', 'hide');
-            }, 300); // Wait for animation to complete
-        }
+            update(newData) {
+                this.data = { ...this.data, ...newData };
+                this.save();
+            },
 
-        function setStatusFilter(status) {
-            currentStatusFilter = status;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-filter') === status);
-            });
-        }
-
-        function filterFileList() {
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-            const list = document.getElementById('fileList');
-            const items = list.querySelectorAll('.file-item');
-            let visibleCount = 0;
-
-            items.forEach(item => {
-                const fileName = item.querySelector('.file-name').textContent.toLowerCase();
-                const itemStatus = item.classList.contains('warning') ? 'warning' : 
-                                   item.classList.contains('danger') ? 'danger' : 'safe';
-                
-                const matchesSearch = fileName.includes(searchQuery);
-                const matchesFilter = currentStatusFilter === 'all' || itemStatus === currentStatusFilter;
-                
-                if (matchesSearch && matchesFilter) {
-                    item.style.display = 'flex';
-                    visibleCount++;
-                } else {
-                    item.style.display = 'none';
+            save() {
+                try {
+                    localStorage.setItem('ransomware_scan_state', JSON.stringify(this.data));
+                } catch (e) {
+                    console.error('Failed to save state:', e);
                 }
-            });
+            },
 
-            // Show "no results" message if nothing matches
-            if (visibleCount === 0 && items.length > 0) {
-                const emptyMsg = list.querySelector('.empty');
-                if (!emptyMsg) {
-                    const newEmpty = document.createElement('div');
-                    newEmpty.className = 'empty';
-                    newEmpty.innerHTML = '<div class="empty-icon"><i class="fas fa-filter"></i></div><p>No files match your search</p>';
-                    list.appendChild(newEmpty);
-                }
-            } else if (visibleCount > 0) {
-                const emptyMsg = list.querySelector('.empty');
-                if (emptyMsg) emptyMsg.remove();
-            }
-        }
-
-        function showAlertWithTimeout() {
-            const alert = document.getElementById('alert');
-            alert.classList.remove('hide');
-            alert.classList.add('show');
-            setTimeout(dismissAlert, 5000); // Auto-dismiss after 5 seconds
-        }
-
-        function updateRiskMeter() {
-            // Calculate threat score (0-100)
-            let threatScore = 0;
-            
-            if (state.total > 0) {
-                // Base score on dangerous file percentage
-                const dangerPercentage = (state.danger / state.total) * 100;
-                threatScore += dangerPercentage * 0.6; // 60% weight
-                
-                // Additional score for total flags
-                const flagDensity = Math.min((state.totalFlags / (state.total * 3)) * 100, 100);
-                threatScore += flagDensity * 0.4; // 40% weight
-            }
-            
-            threatScore = Math.round(threatScore);
-            
-            // Update meter fill
-            const meterFill = document.getElementById('meterFill');
-            meterFill.style.width = threatScore + '%';
-            
-            // Update percentage text
-            document.getElementById('meterText').textContent = threatScore + '%';
-            
-            // Update risk label
-            const riskLabel = document.getElementById('riskLabel');
-            riskLabel.classList.remove('low', 'medium', 'high');
-            
-            if (threatScore < 33) {
-                riskLabel.textContent = 'LOW RISK';
-                riskLabel.classList.add('low');
-            } else if (threatScore < 67) {
-                riskLabel.textContent = 'MEDIUM RISK';
-                riskLabel.classList.add('medium');
-            } else {
-                riskLabel.textContent = 'HIGH RISK';
-                riskLabel.classList.add('high');
-            }
-        }
-
-        function updateUI() {
-            animateValue('totalScanned', state.total);
-            animateValue('safeFiles', state.safe);
-            animateValue('suspiciousFiles', state.suspicious);
-            animateValue('dangerFiles', state.danger);
-            animateValue('extensionFlags', state.extensionFlags);
-            animateValue('keywordFlags', state.keywordFlags);
-            animateValue('entropyFlags', state.entropyFlags);
-            animateValue('totalFlags', state.totalFlags);
-            
-            updateChart();
-            updateRiskMeter();
-            
-            if (state.danger > 0) {
-                showAlertWithTimeout();
-            }
-        }
-
-        function addToList(result) {
-            const list = document.getElementById('fileList');
-            
-            const empty = list.querySelector('.empty');
-            if (empty) empty.remove();
-            
-            const item = document.createElement('div');
-            item.className = 'file-item';
-            
-            const iconClass = result.level === 'safe' ? 'fa-check-circle' : 
-                              result.level === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle';
-            const icon = `<i class="fas ${iconClass}"></i>`;
-            
-            let flagsHTML = '';
-            if (result.flags.length > 0) {
-                flagsHTML = '<div class="flag-list">';
-                for (let f of result.flags) {
-                    flagsHTML += `<span class="flag ${f.type}">${f.text}</span>`;
-                }
-                flagsHTML += '</div>';
-            }
-
-            const time = new Date(result.time);
-            
-            item.innerHTML = `
-                <div class="file-status-icon ${result.level}">${icon}</div>
-                <div class="file-info">
-                    <div class="file-name">${result.name}</div>
-                    <div class="file-meta">${(result.size / 1024).toFixed(1)} KB • ${time.toLocaleTimeString()}</div>
-                    ${flagsHTML}
-                </div>
-                <div class="file-entropy">${result.ent}/8.0</div>
-            `;
-            
-            list.insertBefore(item, list.firstChild);
-        }
-
-        // Helper function to recursively get all files from DataTransferItemList
-        async function getAllFilesFromItems(items) {
-            const files = [];
-            
-            async function traverseFileTree(item, path = '') {
-                return new Promise((resolve) => {
-                    if (item.isFile) {
-                        item.file((file) => {
-                            files.push(file);
-                            resolve();
-                        });
-                    } else if (item.isDirectory) {
-                        const dirReader = item.createReader();
-                        dirReader.readEntries(async (entries) => {
-                            for (const entry of entries) {
-                                await traverseFileTree(entry, path + item.name + '/');
-                            }
-                            resolve();
-                        });
+            load() {
+                try {
+                    const saved = localStorage.getItem('ransomware_scan_state');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        this.data = { ...this.data, ...parsed };
+                        
+                        // Rebuild UI from saved state
+                        if (this.data.fileHistory && this.data.fileHistory.length > 0) {
+                            this.data.fileHistory.forEach(file => {
+                                UI.addFileToList(file, false);
+                            });
+                            Pagination.update();
+                        }
+                        
+                        UI.updateStats(this.data);
                     }
-                });
+                } catch (e) {
+                    console.error('Failed to load state:', e);
+                }
+            },
+
+            reset() {
+                this.data = {
+                    total: 0,
+                    safe: 0,
+                    suspicious: 0,
+                    danger: 0,
+                    extensionFlags: 0,
+                    keywordFlags: 0,
+                    entropyFlags: 0,
+                    totalFlags: 0,
+                    fileHistory: []
+                };
+                this.ui = {
+                    currentFilter: 'all',
+                    currentPage: 1,
+                    searchQuery: ''
+                };
+                localStorage.removeItem('ransomware_scan_state');
             }
-            
-            for (const item of items) {
-                const entry = item.webkitGetAsEntry();
-                if (entry) {
-                    await traverseFileTree(entry);
-                }
-            }
-            
-            return files;
-        }
+        };
 
-        async function uploadFiles(files) {
-            const zone = document.getElementById('uploadZone');
-            zone.classList.add('uploading');
+        // ========================================
+        // UI MODULE
+        // ========================================
+        const UI = {
+            // Animate counter values
+            animateValue(id, end) {
+                const el = document.getElementById(id);
+                const start = parseInt(el.textContent) || 0;
+                const duration = 400;
+                const startTime = performance.now();
 
-            const formData = new FormData();
-            const timestamp = Date.now();
-            
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                // Extract just the filename, removing any directory path
-                let filename = file.name;
-                if (file.webkitRelativePath) {
-                    filename = file.webkitRelativePath.split('/').pop();
+                function update(currentTime) {
+                    const progress = Math.min((currentTime - startTime) / duration, 1);
+                    el.textContent = Math.floor(progress * (end - start) + start);
+                    if (progress < 1) requestAnimationFrame(update);
                 }
+
+                requestAnimationFrame(update);
+            },
+
+            // Update all stats
+            updateStats(stats) {
+                this.animateValue('totalScanned', stats.total);
+                this.animateValue('safeFiles', stats.safe);
+                this.animateValue('suspiciousFiles', stats.suspicious);
+                this.animateValue('dangerFiles', stats.danger);
+                this.animateValue('extensionFlags', stats.extensionFlags);
+                this.animateValue('keywordFlags', stats.keywordFlags);
+                this.animateValue('entropyFlags', stats.entropyFlags);
+                this.animateValue('totalFlags', stats.totalFlags);
                 
-                // Add a unique prefix to prevent collisions if multiple files have the same name
-                const uniqueFilename = `${timestamp}_${i}_${filename}`;
-                const newFile = new File([file], uniqueFilename, { type: file.type });
-                formData.append('files', newFile);
-            }
-
-            try {
-                const response = await fetch('/api/scan', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
+                this.updateChart();
+                this.updateRiskMeter();
                 
-                if (data.error) {
-                    throw new Error(data.error);
+                if (stats.danger > 0) {
+                    this.showAlert();
                 }
+            },
+
+            // Update risk meter
+            updateRiskMeter() {
+                let threatScore = 0;
                 
-                if (data.stats) {
-                    state.total = data.stats.total;
-                    state.safe = data.stats.safe;
-                    state.suspicious = data.stats.suspicious;
-                    state.danger = data.stats.danger;
-                    state.extensionFlags = data.stats.extensionFlags;
-                    state.keywordFlags = data.stats.keywordFlags;
-                    state.entropyFlags = data.stats.entropyFlags;
-                    state.totalFlags = data.stats.totalFlags;
+                if (State.data.total > 0) {
+                    const dangerPercentage = (State.data.danger / State.data.total) * 100;
+                    threatScore += dangerPercentage * CONFIG.WEIGHTS.DANGER_PERCENTAGE;
                     
-                    updateUI();
+                    const flagDensity = Math.min((State.data.totalFlags / (State.data.total * 3)) * 100, 100);
+                    threatScore += flagDensity * CONFIG.WEIGHTS.FLAG_DENSITY;
+                }
+                
+                threatScore = Math.round(threatScore);
+                
+                const meterFill = document.getElementById('meterFill');
+                meterFill.style.width = threatScore + '%';
+                document.getElementById('meterText').textContent = threatScore + '%';
+                
+                const riskLabel = document.getElementById('riskLabel');
+                riskLabel.classList.remove('low', 'medium', 'high');
+                
+                if (threatScore < CONFIG.THREAT_THRESHOLDS.LOW) {
+                    riskLabel.textContent = 'LOW RISK';
+                    riskLabel.classList.add('low');
+                } else if (threatScore < CONFIG.THREAT_THRESHOLDS.MEDIUM) {
+                    riskLabel.textContent = 'MEDIUM RISK';
+                    riskLabel.classList.add('medium');
+                } else {
+                    riskLabel.textContent = 'HIGH RISK';
+                    riskLabel.classList.add('high');
+                }
+            },
+
+            // Add file to list
+            addFileToList(result, saveToHistory = true) {
+                if (saveToHistory) {
+                    State.data.fileHistory.push(result);
+                    State.save();
                 }
 
-            } catch (error) {
-                console.error('Upload error:', error);
-                alert(`Error uploading files: ${error.message}\n\nMake sure the backend server is running on http://localhost:5000`);
-            } finally {
-                zone.classList.remove('uploading');
-            }
-        }
+                const list = document.getElementById('fileList');
+                const empty = list.querySelector('.empty');
+                if (empty) empty.remove();
+                
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.dataset.fileId = result.name + '_' + result.time;
+                
+                const iconClass = result.level === 'safe' ? 'fa-check-circle' : 
+                                  result.level === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle';
+                const icon = `<i class="fas ${iconClass}"></i>`;
+                
+                let flagsHTML = '';
+                if (result.flags && result.flags.length > 0) {
+                    flagsHTML = '<div class="flag-list">';
+                    for (let f of result.flags) {
+                        flagsHTML += `<span class="flag ${f.type}">${f.text}</span>`;
+                    }
+                    flagsHTML += '</div>';
+                }
 
-        const zone = document.getElementById('uploadZone');
-        
-        zone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            zone.classList.add('dragging');
-        });
-        
-        zone.addEventListener('dragleave', () => {
-            zone.classList.remove('dragging');
-        });
-        
-        zone.addEventListener('drop', async (e) => {
-            e.preventDefault();
-            zone.classList.remove('dragging');
-            
-            // Check if items include folders
-            const items = Array.from(e.dataTransfer.items);
-            if (items.length > 0 && items[0].webkitGetAsEntry) {
-                // Use FileSystem API to handle folders
-                const files = await getAllFilesFromItems(items);
-                uploadFiles(files);
-            } else {
-                // Fallback to regular files
-                uploadFiles(e.dataTransfer.files);
-            }
-        });
-        
-        // Handle file input (regular files)
-        document.getElementById('fileInput').addEventListener('change', (e) => {
-            uploadFiles(e.target.files);
-        });
+                const time = new Date(result.time);
+                const fileName = Utils.sanitizeFileName(result.name);
+                
+                item.innerHTML = `
+                    <div class="file-status-icon">${icon}</div>
+                    <div class="file-info">
+                        <div class="file-name">${fileName}</div>
+                        <div class="file-meta">${(result.size / 1024).toFixed(1)} KB • ${time.toLocaleTimeString()}</div>
+                        ${flagsHTML}
+                    </div>
+                    <div class="file-entropy">${result.ent}/8.0</div>
+                `;
+                
+                if (result.level === 'warning') {
+                    item.classList.add('warning');
+                } else if (result.level === 'danger') {
+                    item.classList.add('danger');
+                }
 
-        // Handle folder input
-        document.getElementById('folderInput').addEventListener('change', (e) => {
-            uploadFiles(e.target.files);
-        });
+                // Add click handler to show details
+                item.addEventListener('click', () => {
+                    this.showFileDetails(result);
+                });
+                
+                list.insertBefore(item, list.firstChild);
+            },
 
-        async function clearAll() {
-            if (!confirm('Clear all results?')) return;
-            
-            try {
-                await fetch('/api/reset', { method: 'POST' });
-            } catch (error) {
-                console.error('Reset error:', error);
-            }
-        }
+            // Show file details modal
+            showFileDetails(file) {
+                const modal = document.getElementById('fileDetailsModal');
+                const body = document.getElementById('modalBody');
+                
+                const time = new Date(file.time);
+                const levelBadge = file.level === 'safe' ? 
+                    '<span style="color: var(--safe-color);">✓ Safe</span>' :
+                    file.level === 'warning' ?
+                    '<span style="color: var(--warning-color);">⚠ Suspicious</span>' :
+                    '<span style="color: var(--danger-color);">⚠ Threat</span>';
+                
+                body.innerHTML = `
+                    <div class="detail-row">
+                        <span class="detail-label">File Name:</span>
+                        <span class="detail-value">${Utils.sanitizeFileName(file.name)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value">${levelBadge}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Size:</span>
+                        <span class="detail-value">${(file.size / 1024).toFixed(2)} KB</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Entropy:</span>
+                        <span class="detail-value">${file.ent}/8.0</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Scan Time:</span>
+                        <span class="detail-value">${time.toLocaleString()}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Flags:</span>
+                        <span class="detail-value">${file.flags ? file.flags.length : 0}</span>
+                    </div>
+                    ${file.flags && file.flags.length > 0 ? `
+                    <div style="margin-top: 20px;">
+                        <strong>Detection Flags:</strong>
+                        <div style="margin-top: 10px;">
+                            ${file.flags.map(f => `<span class="flag ${f.type}">${f.text}</span>`).join(' ')}
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+                
+                modal.classList.add('active');
+            },
 
-        let chart;
-        
-        function updateChart() {
-            const ctx = document.getElementById('chart').getContext('2d');
-            
-            const safeCount = state.safe;
-            const suspiciousCount = state.suspicious;
-            const dangerCount = state.danger;
-            
-            if (chart) {
-                chart.data.datasets[0].data = [safeCount, suspiciousCount, dangerCount];
-                chart.update();
-            } else {
-                chart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Safe', 'Suspicious', 'Threats'],
-                        datasets: [{
-                            data: [safeCount, suspiciousCount, dangerCount],
-                            backgroundColor: [
-                                'rgba(16, 185, 129, 0.8)',
-                                'rgba(245, 158, 11, 0.8)',
-                                'rgba(239, 68, 68, 0.8)'
-                            ],
-                            borderColor: [
-                                '#10b981',
-                                '#f59e0b',
-                                '#ef4444'
-                            ],
-                            borderWidth: 3,
-                            hoverOffset: 10
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim(),
-                                    padding: 20,
-                                    font: {
-                                        size: 13,
-                                        weight: '600'
-                                    },
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                padding: 12,
-                                bodyFont: {
-                                    size: 13
+            closeModal() {
+                document.getElementById('fileDetailsModal').classList.remove('active');
+            },
+
+            // Show alert
+            showAlert() {
+                const alert = document.getElementById('alert');
+                alert.classList.remove('hide');
+                alert.classList.add('show');
+                setTimeout(() => this.dismissAlert(), 5000);
+            },
+
+            dismissAlert() {
+                const alert = document.getElementById('alert');
+                alert.classList.add('hide');
+                setTimeout(() => {
+                    alert.classList.remove('show', 'hide');
+                }, 300);
+            },
+
+            // Update chart
+            updateChart() {
+                const ctx = document.getElementById('chart').getContext('2d');
+                
+                const safeCount = State.data.safe;
+                const suspiciousCount = State.data.suspicious;
+                const dangerCount = State.data.danger;
+                
+                if (window.scanChart) {
+                    window.scanChart.data.datasets[0].data = [safeCount, suspiciousCount, dangerCount];
+                    window.scanChart.update('none'); // No animation for better performance
+                } else {
+                    window.scanChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Safe', 'Suspicious', 'Threats'],
+                            datasets: [{
+                                data: [safeCount, suspiciousCount, dangerCount],
+                                backgroundColor: [
+                                    'rgba(16, 185, 129, 0.8)',
+                                    'rgba(245, 158, 11, 0.8)',
+                                    'rgba(239, 68, 68, 0.8)'
+                                ],
+                                borderColor: [
+                                    '#10b981',
+                                    '#f59e0b',
+                                    '#ef4444'
+                                ],
+                                borderWidth: 3,
+                                hoverOffset: 10
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim(),
+                                        padding: 20,
+                                        font: {
+                                            size: 13,
+                                            weight: '600'
+                                        },
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
                                 },
-                                callbacks: {
-                                    label: function(context) {
-                                        const label = context.label || '';
-                                        const value = context.parsed || 0;
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                        return `${label}: ${value} files (${percentage}%)`;
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    padding: 12,
+                                    bodyFont: {
+                                        size: 13
+                                    },
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                            return `${label}: ${value} files (${percentage}%)`;
+                                        }
                                     }
                                 }
+                            },
+                            cutout: '65%'
+                        }
+                    });
+                }
+            },
+
+            // Show loading
+            showLoading() {
+                document.getElementById('loadingSpinner').classList.add('active');
+            },
+
+            hideLoading() {
+                document.getElementById('loadingSpinner').classList.remove('active');
+            },
+
+            // Update progress
+            updateProgress(percent) {
+                const container = document.getElementById('progressContainer');
+                const fill = document.getElementById('progressFill');
+                const text = document.getElementById('progressText');
+                
+                container.classList.add('active');
+                fill.style.width = percent + '%';
+                text.textContent = `Uploading... ${Math.round(percent)}%`;
+                
+                if (percent >= 100) {
+                    setTimeout(() => {
+                        container.classList.remove('active');
+                        fill.style.width = '0%';
+                    }, 1000);
+                }
+            },
+
+            // Confirm clear
+            confirmClear() {
+                if (confirm('Are you sure you want to clear all scan results? This action cannot be undone.')) {
+                    FileScanner.clearAll();
+                }
+            }
+        };
+
+        // ========================================
+        // TOAST NOTIFICATIONS
+        // ========================================
+        const Toast = {
+            show(title, message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const icons = {
+                    success: 'fa-check-circle',
+                    error: 'fa-exclamation-circle',
+                    warning: 'fa-exclamation-triangle',
+                    info: 'fa-info-circle'
+                };
+                
+                toast.innerHTML = `
+                    <div class="toast-icon">
+                        <i class="fas ${icons[type]}"></i>
+                    </div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        ${message ? `<div class="toast-message">${message}</div>` : ''}
+                    </div>
+                    <button class="toast-close" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }, CONFIG.TOAST_DURATION);
+            }
+        };
+
+        // ========================================
+        // FILE SCANNER MODULE
+        // ========================================
+        const FileScanner = {
+            // Validate file
+            validate(file) {
+                if (file.size > CONFIG.MAX_FILE_SIZE) {
+                    Toast.show('File Too Large', `${file.name} exceeds 50MB limit`, 'warning');
+                    return false;
+                }
+                return true;
+            },
+
+            // Get all files from items (for drag & drop folders)
+            async getAllFilesFromItems(items) {
+                const files = [];
+                
+                async function traverseFileTree(item, path = '') {
+                    return new Promise((resolve) => {
+                        if (item.isFile) {
+                            item.file((file) => {
+                                files.push(file);
+                                resolve();
+                            });
+                        } else if (item.isDirectory) {
+                            const dirReader = item.createReader();
+                            dirReader.readEntries(async (entries) => {
+                                for (const entry of entries) {
+                                    await traverseFileTree(entry, path + item.name + '/');
+                                }
+                                resolve();
+                            });
+                        }
+                    });
+                }
+                
+                for (const item of items) {
+                    const entry = item.webkitGetAsEntry();
+                    if (entry) {
+                        await traverseFileTree(entry);
+                    }
+                }
+                
+                return files;
+            },
+
+            // Upload files
+            async uploadFiles(files) {
+                const zone = document.getElementById('uploadZone');
+                zone.classList.add('uploading');
+                UI.showLoading();
+
+                // Filter valid files
+                const validFiles = Array.from(files).filter(f => this.validate(f));
+                
+                if (validFiles.length === 0) {
+                    Toast.show('No Valid Files', 'All files were filtered out', 'warning');
+                    zone.classList.remove('uploading');
+                    UI.hideLoading();
+                    return;
+                }
+
+                const formData = new FormData();
+                const timestamp = Date.now();
+                
+                for (let i = 0; i < validFiles.length; i++) {
+                    const file = validFiles[i];
+                    let filename = file.name;
+                    if (file.webkitRelativePath) {
+                        filename = file.webkitRelativePath.split('/').pop();
+                    }
+                    
+                    const uniqueFilename = `${timestamp}_${i}_${filename}`;
+                    const newFile = new File([file], uniqueFilename, { type: file.type });
+                    formData.append('files', newFile);
+                }
+
+                try {
+                    const xhr = new XMLHttpRequest();
+                    
+                    xhr.upload.addEventListener('progress', (e) => {
+                        if (e.lengthComputable) {
+                            const percent = (e.loaded / e.total) * 100;
+                            UI.updateProgress(percent);
+                        }
+                    });
+
+                    xhr.open('POST', '/api/scan');
+                    
+                    xhr.onload = function() {
+                        UI.hideLoading();
+                        
+                        if (xhr.status === 200) {
+                            const data = JSON.parse(xhr.responseText);
+                            
+                            if (data.error) {
+                                throw new Error(data.error);
                             }
-                        },
-                        cutout: '65%'
+                            
+                            if (data.stats) {
+                                State.update(data.stats);
+                                UI.updateStats(data.stats);
+                                Toast.show('Scan Complete', `Scanned ${validFiles.length} file(s)`, 'success');
+                            }
+                        } else {
+                            throw new Error(`HTTP error! status: ${xhr.status}`);
+                        }
+                    };
+
+                    xhr.onerror = function() {
+                        UI.hideLoading();
+                        Toast.show('Upload Failed', 'Network error occurred', 'error');
+                    };
+
+                    xhr.send(formData);
+
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    Toast.show('Upload Error', error.message, 'error');
+                } finally {
+                    zone.classList.remove('uploading');
+                }
+            },
+
+            // Clear all
+            async clearAll() {
+                try {
+                    await fetch('/api/reset', { method: 'POST' });
+                    Toast.show('Cleared', 'All scan results have been cleared', 'success');
+                } catch (error) {
+                    console.error('Reset error:', error);
+                    Toast.show('Error', 'Failed to clear results', 'error');
+                }
+            },
+
+            // Export results to CSV
+            exportResults() {
+                if (State.data.fileHistory.length === 0) {
+                    Toast.show('No Data', 'No scan results to export', 'warning');
+                    return;
+                }
+
+                const headers = ['File Name', 'Status', 'Size (KB)', 'Entropy', 'Flags', 'Scan Time'];
+                const rows = State.data.fileHistory.map(f => {
+                    const time = new Date(f.time).toLocaleString();
+                    const flags = f.flags ? f.flags.map(flag => flag.text).join('; ') : '';
+                    return [
+                        Utils.sanitizeFileName(f.name),
+                        f.level,
+                        (f.size / 1024).toFixed(2),
+                        f.ent,
+                        flags,
+                        time
+                    ];
+                });
+
+                const csv = [
+                    headers.join(','),
+                    ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+                ].join('\n');
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ransomware_scan_${Date.now()}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                Toast.show('Exported', 'Results exported successfully', 'success');
+            }
+        };
+
+        // ========================================
+        // PAGINATION MODULE
+        // ========================================
+        const Pagination = {
+            update() {
+                const totalItems = State.data.fileHistory.length;
+                const totalPages = Math.ceil(totalItems / CONFIG.ITEMS_PER_PAGE);
+                
+                const pagination = document.getElementById('pagination');
+                if (totalPages <= 1) {
+                    pagination.style.display = 'none';
+                    return;
+                }
+                
+                pagination.style.display = 'flex';
+                
+                const pageInfo = document.getElementById('pageInfo');
+                pageInfo.textContent = `Page ${State.ui.currentPage} of ${totalPages}`;
+                
+                document.getElementById('prevPage').disabled = State.ui.currentPage === 1;
+                document.getElementById('nextPage').disabled = State.ui.currentPage === totalPages;
+            },
+
+            nextPage() {
+                const totalPages = Math.ceil(State.data.fileHistory.length / CONFIG.ITEMS_PER_PAGE);
+                if (State.ui.currentPage < totalPages) {
+                    State.ui.currentPage++;
+                    Filter.apply();
+                    this.update();
+                }
+            },
+
+            prevPage() {
+                if (State.ui.currentPage > 1) {
+                    State.ui.currentPage--;
+                    Filter.apply();
+                    this.update();
+                }
+            }
+        };
+
+        // ========================================
+        // FILTER & SEARCH MODULE
+        // ========================================
+        const Filter = {
+            debounceTimeout: null,
+
+            setFilter(filter) {
+                State.ui.currentFilter = filter;
+                State.ui.currentPage = 1;
+                
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.filter === filter);
+                });
+                
+                this.apply();
+            },
+
+            search(query) {
+                clearTimeout(this.debounceTimeout);
+                
+                this.debounceTimeout = setTimeout(() => {
+                    State.ui.searchQuery = query.toLowerCase();
+                    State.ui.currentPage = 1;
+                    this.apply();
+                }, CONFIG.DEBOUNCE_DELAY);
+            },
+
+            apply() {
+                const list = document.getElementById('fileList');
+                const items = list.querySelectorAll('.file-item');
+                let visibleCount = 0;
+                let currentPageCount = 0;
+                const startIndex = (State.ui.currentPage - 1) * CONFIG.ITEMS_PER_PAGE;
+                const endIndex = startIndex + CONFIG.ITEMS_PER_PAGE;
+
+                items.forEach((item, index) => {
+                    const fileName = item.querySelector('.file-name').textContent.toLowerCase();
+                    const itemStatus = item.classList.contains('warning') ? 'warning' : 
+                                       item.classList.contains('danger') ? 'danger' : 'safe';
+                    
+                    const matchesSearch = !State.ui.searchQuery || fileName.includes(State.ui.searchQuery);
+                    const matchesFilter = State.ui.currentFilter === 'all' || itemStatus === State.ui.currentFilter;
+                    
+                    if (matchesSearch && matchesFilter) {
+                        if (visibleCount >= startIndex && visibleCount < endIndex) {
+                            item.style.display = 'flex';
+                            currentPageCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
                     }
                 });
+
+                // Update empty state
+                if (visibleCount === 0 && items.length > 0) {
+                    let emptyMsg = list.querySelector('.empty');
+                    if (!emptyMsg) {
+                        emptyMsg = document.createElement('div');
+                        emptyMsg.className = 'empty';
+                        emptyMsg.innerHTML = '<div class="empty-icon"><i class="fas fa-filter"></i></div><p>No files match your search</p>';
+                        list.appendChild(emptyMsg);
+                    }
+                } else {
+                    const emptyMsg = list.querySelector('.empty');
+                    if (emptyMsg) emptyMsg.remove();
+                }
+
+                Pagination.update();
             }
+        };
+
+        // ========================================
+        // UTILITIES
+        // ========================================
+        const Utils = {
+            sanitizeFileName(name) {
+                return name.replace(/[<>:"/\\|?*]/g, '_');
+            }
+        };
+
+        // ========================================
+        // THEME MANAGEMENT
+        // ========================================
+        const Theme = {
+            init() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                    this.updateIcon(true);
+                }
+            },
+
+            updateIcon(isDark) {
+                const icon = document.getElementById('themeToggle').querySelector('i');
+                icon.classList.remove('fa-moon', 'fa-sun');
+                icon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
+            },
+
+            toggle() {
+                const isDark = document.body.classList.toggle('dark-theme');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                this.updateIcon(isDark);
+                
+                if (window.scanChart) {
+                    window.scanChart.options.plugins.legend.labels.color = 
+                        getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
+                    window.scanChart.update('none');
+                }
+            }
+        };
+
+        // ========================================
+        // KEYBOARD SHORTCUTS
+        // ========================================
+        const Shortcuts = {
+            init() {
+                document.addEventListener('keydown', (e) => {
+                    // Ctrl/Cmd + K: Focus search
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                        e.preventDefault();
+                        document.getElementById('searchInput').focus();
+                    }
+                    
+                    // Ctrl/Cmd + D: Toggle theme
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                        e.preventDefault();
+                        Theme.toggle();
+                    }
+                    
+                    // Ctrl/Cmd + E: Export
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                        e.preventDefault();
+                        FileScanner.exportResults();
+                    }
+                    
+                    // Ctrl/Cmd + Shift + C: Clear all
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+                        e.preventDefault();
+                        UI.confirmClear();
+                    }
+                    
+                    // Escape: Close modal/dismiss alert
+                    if (e.key === 'Escape') {
+                        UI.closeModal();
+                        UI.dismissAlert();
+                    }
+                    
+                    // ?: Show shortcuts help
+                    if (e.key === '?') {
+                        Toast.show(
+                            'Keyboard Shortcuts',
+                            'Ctrl+K: Search • Ctrl+D: Toggle Theme • Ctrl+E: Export • Ctrl+Shift+C: Clear • Esc: Close',
+                            'info'
+                        );
+                    }
+                });
+
+                // Show hint initially
+                const hint = document.getElementById('shortcutsHint');
+                hint.classList.add('show');
+                setTimeout(() => hint.classList.remove('show'), 5000);
+            }
+        };
+
+        // ========================================
+        // WEBSOCKET CONNECTION
+        // ========================================
+        const WebSocketManager = {
+            socket: null,
+
+            init() {
+                this.socket = io();
+                
+                this.socket.on('connect', () => {
+                    console.log('WebSocket connected');
+                    document.getElementById('status').classList.remove('disconnected');
+                    document.getElementById('status').querySelector('span:last-child').textContent = 'Connected';
+                });
+
+                this.socket.on('disconnect', () => {
+                    console.log('WebSocket disconnected');
+                    document.getElementById('status').classList.add('disconnected');
+                    document.getElementById('status').querySelector('span:last-child').textContent = 'Disconnected';
+                });
+
+                this.socket.on('file_scanned', (result) => {
+                    console.log('File scanned:', result);
+                    UI.addFileToList(result, true);
+                    Pagination.update();
+                });
+
+                this.socket.on('stats_reset', () => {
+                    console.log('Stats reset by server');
+                    State.reset();
+                    
+                    document.getElementById('fileList').innerHTML = `
+                        <div class="empty">
+                            <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                            <p>No files scanned yet</p>
+                        </div>
+                    `;
+                    
+                    document.getElementById('alert').classList.remove('show');
+                    document.getElementById('pagination').style.display = 'none';
+                    UI.updateStats(State.data);
+                });
+            }
+        };
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        function initEventListeners() {
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', () => Theme.toggle());
+
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                Filter.search(e.target.value);
+            });
+
+            // Filter buttons (using event delegation)
+            document.getElementById('filterButtons').addEventListener('click', (e) => {
+                const btn = e.target.closest('.filter-btn');
+                if (btn) {
+                    Filter.setFilter(btn.dataset.filter);
+                }
+            });
+
+            // File input
+            document.getElementById('fileInput').addEventListener('change', (e) => {
+                FileScanner.uploadFiles(e.target.files);
+            });
+
+            // Folder input
+            document.getElementById('folderInput').addEventListener('change', (e) => {
+                FileScanner.uploadFiles(e.target.files);
+            });
+
+            // Drag & Drop
+            const zone = document.getElementById('uploadZone');
+            
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('dragging');
+            });
+            
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('dragging');
+            });
+            
+            zone.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragging');
+                
+                const items = Array.from(e.dataTransfer.items);
+                if (items.length > 0 && items[0].webkitGetAsEntry) {
+                    const files = await FileScanner.getAllFilesFromItems(items);
+                    FileScanner.uploadFiles(files);
+                } else {
+                    FileScanner.uploadFiles(e.dataTransfer.files);
+                }
+            });
+
+            // Click outside modal to close
+            document.getElementById('fileDetailsModal').addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-overlay')) {
+                    UI.closeModal();
+                }
+            });
         }
 
-        updateChart();
-
-        // Fetch initial stats on load
-        async function loadStats() {
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        async function init() {
+            Theme.init();
+            Shortcuts.init();
+            WebSocketManager.init();
+            initEventListeners();
+            
+            // Load saved state
+            State.load();
+            
+            // Initialize chart
+            UI.updateChart();
+            
+            // Load initial stats from server
             try {
                 const response = await fetch('/api/stats');
                 const stats = await response.json();
-                
-                state.total = stats.total;
-                state.safe = stats.safe;
-                state.suspicious = stats.suspicious;
-                state.danger = stats.danger;
-                state.extensionFlags = stats.extensionFlags;
-                state.keywordFlags = stats.keywordFlags;
-                state.entropyFlags = stats.entropyFlags;
-                state.totalFlags = stats.totalFlags;
-                
-                updateUI();
+                State.update(stats);
+                UI.updateStats(stats);
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
+
+            console.log('🛡️ Ransomware Detection System Initialized');
         }
 
-        loadStats();
+        // Start the app
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
