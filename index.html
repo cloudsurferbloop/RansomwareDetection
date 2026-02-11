@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
         :root {
             --bg-primary: #ffffff;
@@ -14,11 +15,10 @@
             --bg-tertiary: #fafafa;
             --text-primary: #1a1a1a;
             --text-secondary: #6b7280;
-            --text-muted: #4b5563;
             --border-color: #e5e7eb;
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --icon-color: #8b5cf6;
+            --primary-color: #8b5cf6;
             --safe-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
@@ -30,11 +30,10 @@
             --bg-tertiary: #2a2a2a;
             --text-primary: #f5f5f5;
             --text-secondary: #b0b0b0;
-            --text-muted: #a0a0a0;
             --border-color: #3a3a3a;
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
             --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-            --icon-color: #a78bfa;
+            --primary-color: #a78bfa;
             --safe-color: #10b981;
             --warning-color: #fbbf24;
             --danger-color: #f87171;
@@ -47,7 +46,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg-secondary);
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -58,103 +57,9 @@
             height: 100vh;
         }
 
-        /* Sidebar */
+        /* Sidebar - Hidden */
         .sidebar {
-            width: 240px;
-            background: var(--bg-primary);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        .brand {
-            padding: 24px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .brand h2 {
-            font-size: 16px;
-            color: var(--text-primary);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .brand-icon {
-            font-size: 24px;
-            filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
-            color: #8b5cf6;
-        }
-
-        .nav {
-            padding: 16px 0;
-        }
-
-        .nav-section {
-            margin-bottom: 24px;
-        }
-
-        .nav-label {
-            padding: 0 20px 8px;
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .nav-item {
-            padding: 12px 20px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
-            font-weight: 500;
-            position: relative;
-        }
-
-        .nav-item:hover {
-            background: var(--bg-tertiary);
-            color: var(--icon-color);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
-            color: #7c3aed;
-            font-weight: 600;
-        }
-
-        body.dark-theme .nav-item.active {
-            background: linear-gradient(135deg, #3d3d5c 0%, #4a4a6f 100%);
-            color: #a78bfa;
-        }
-
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%);
-        }
-
-        .nav-icon {
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-icon i {
-            font-size: 16px;
+            display: none;
         }
 
         /* Main */
@@ -166,23 +71,24 @@
 
         .header {
             padding: 28px 32px;
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            backdrop-filter: blur(8px);
             transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.dark-theme .header {
+            background: rgba(17, 17, 17, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .header h1 {
             font-size: 28px;
             font-weight: 700;
             color: var(--text-primary);
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-muted) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .header-right {
@@ -192,7 +98,7 @@
         }
 
         .theme-toggle {
-            background: var(--bg-tertiary);
+            background: transparent;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 10px 12px;
@@ -206,8 +112,8 @@
         }
 
         .theme-toggle:hover {
-            background: var(--border-color);
-            transform: scale(1.05);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
         }
 
         .status {
@@ -269,6 +175,7 @@
             position: relative;
             transition: all 0.3s;
             box-shadow: var(--shadow-sm);
+            overflow: hidden;
         }
 
         .stat-card:hover {
@@ -284,19 +191,19 @@
             right: 0;
             height: 4px;
             border-radius: 16px 16px 0 0;
-            background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);
+            background: var(--primary-color);
         }
 
         .stat-card.safe::before {
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            background: var(--safe-color);
         }
 
         .stat-card.warning::before {
-            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+            background: var(--warning-color);
         }
 
         .stat-card.danger::before {
-            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+            background: var(--danger-color);
         }
 
         .stat-header {
@@ -317,7 +224,7 @@
         .stat-icon {
             font-size: 24px;
             opacity: 0.6;
-            color: #8b5cf6;
+            color: var(--primary-color);
         }
 
         .stat-value {
@@ -350,8 +257,8 @@
         }
 
         .upload-section.dragging {
-            border-color: #8b5cf6;
-            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-color: var(--primary-color);
+            background: rgba(139, 92, 246, 0.05);
             transform: scale(1.02);
         }
 
@@ -368,7 +275,7 @@
             font-size: 64px;
             margin-bottom: 16px;
             display: block;
-            color: #8b5cf6;
+            color: var(--primary-color);
         }
 
         .upload-section h3 {
@@ -392,7 +299,7 @@
 
         .btn {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            background: var(--primary-color);
             color: white;
             border: none;
             border-radius: 8px;
@@ -409,15 +316,11 @@
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+            opacity: 0.9;
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-secondary:hover {
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+            background: #6366f1;
         }
 
         /* Grid Layout */
@@ -434,7 +337,9 @@
             border-radius: 16px;
             padding: 24px;
             box-shadow: var(--shadow-sm);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .panel-header {
@@ -443,7 +348,8 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1.5px solid var(--border-color);
+            position: relative;
         }
 
         .panel-title {
@@ -468,27 +374,29 @@
             margin-bottom: 12px;
             transition: all 0.2s;
             background: var(--bg-tertiary);
+            position: relative;
         }
 
         .file-item:hover {
-            border-color: #8b5cf6;
+            border-color: var(--primary-color);
             background: var(--bg-primary);
             transform: translateX(4px);
         }
 
         .file-status-icon {
-            font-size: 28px;
+            font-size: 32px;
             min-width: 32px;
             text-align: center;
-            color: #10b981;
+            color: var(--safe-color);
+            font-weight: 700;
         }
 
         .file-item.warning .file-status-icon {
-            color: #f59e0b;
+            color: var(--warning-color);
         }
 
         .file-item.danger .file-status-icon {
-            color: #ef4444;
+            color: var(--danger-color);
         }
 
         .file-info {
@@ -540,7 +448,7 @@
         .file-entropy {
             font-size: 18px;
             font-weight: 700;
-            color: #8b5cf6;
+            color: var(--primary-color);
             text-align: right;
         }
 
@@ -572,6 +480,163 @@
             margin-bottom: 24px;
         }
 
+        /* Search and Filter */
+        .search-filter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1.5px solid var(--border-color);
+            position: relative;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 12px;
+            border: 1.5px solid transparent;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Risk Meter */
+        .risk-meter {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .risk-meter h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meter {
+            position: relative;
+            height: 32px;
+            background: var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
+            width: 0%;
+            border-radius: 8px;
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #meterText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .risk-label {
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 8px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-label.low {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .risk-label.medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .risk-label.high {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
         .flag-stat {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
@@ -589,6 +654,25 @@
 
         .flag-stat-value {
             font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .total-flags-box {
+            text-align: center;
+            padding: 16px 0;
+            border-top: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .total-flags-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .total-flags-value {
+            font-size: 32px;
             font-weight: 700;
             color: var(--text-primary);
         }
@@ -616,6 +700,11 @@
 
         .alert.show {
             display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert.hide {
+            animation: slideOut 0.3s ease forwards;
         }
 
         @keyframes slideIn {
@@ -626,6 +715,17 @@
             to {
                 transform: translateX(0);
                 opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
             }
         }
 
@@ -792,6 +892,27 @@
                         <div class="panel-header">
                             <div class="panel-title">Scan Results</div>
                         </div>
+                        
+                        <!-- Search and Filter -->
+                        <div class="search-filter-container">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchInput" placeholder="Search files..." onkeyup="filterFileList()">
+                            </div>
+                            <div class="filter-buttons">
+                                <button class="filter-btn active" data-filter="all" onclick="setStatusFilter('all'); filterFileList()">All</button>
+                                <button class="filter-btn" data-filter="safe" onclick="setStatusFilter('safe'); filterFileList()">
+                                    <i class="fas fa-check-circle"></i> Safe
+                                </button>
+                                <button class="filter-btn" data-filter="warning" onclick="setStatusFilter('warning'); filterFileList()">
+                                    <i class="fas fa-exclamation-triangle"></i> Suspicious
+                                </button>
+                                <button class="filter-btn" data-filter="danger" onclick="setStatusFilter('danger'); filterFileList()">
+                                    <i class="fas fa-exclamation-circle"></i> Threats
+                                </button>
+                            </div>
+                        </div>
+                        
                         <div class="file-list" id="fileList">
                             <div class="empty">
                                 <div class="empty-icon"><i class="fas fa-inbox"></i></div>
@@ -806,6 +927,15 @@
                             <div class="panel-title">Analytics</div>
                         </div>
                         
+                        <div class="risk-meter">
+                            <h3>System Threat Score</h3>
+                            <div class="meter">
+                                <div class="meter-fill" id="meterFill"></div>
+                                <span id="meterText">0%</span>
+                            </div>
+                            <div class="risk-label low" id="riskLabel">LOW RISK</div>
+                        </div>
+
                         <div class="flag-stats">
                             <div class="flag-stat">
                                 <div class="flag-stat-label">Extension</div>
@@ -821,9 +951,9 @@
                             </div>
                         </div>
 
-                        <div style="text-align: center; padding: 16px 0; border-top: 1px solid #e5e7eb; margin-bottom: 20px;">
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Total Flags</div>
-                            <div style="font-size: 32px; font-weight: 700; color: #1a1a1a;" id="totalFlags">0</div>
+                        <div class="total-flags-box">
+                            <div class="total-flags-label">Total Flags</div>
+                            <div class="total-flags-value" id="totalFlags">0</div>
                         </div>
 
                         <div class="chart-container">
@@ -836,6 +966,22 @@
     </div>
 
     <script>
+        // Animate counter values
+        function animateValue(id, end) {
+            const el = document.getElementById(id);
+            const start = parseInt(el.textContent) || 0;
+            const duration = 400;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const progress = Math.min((currentTime - startTime) / duration, 1);
+                el.textContent = Math.floor(progress * (end - start) + start);
+                if (progress < 1) requestAnimationFrame(update);
+            }
+
+            requestAnimationFrame(update);
+        }
+
         // Theme initialization
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
@@ -855,6 +1001,11 @@
             const isDark = document.body.classList.toggle('dark-theme');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateThemeIcon(isDark);
+            // Refresh chart with new colors
+            if (chart) {
+                chart.options.plugins.legend.labels.color = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
+                chart.update();
+            }
         }
 
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
@@ -873,6 +1024,8 @@
             totalFlags: 0,
             fileHistory: []
         };
+
+        let currentStatusFilter = 'all';
 
         // WebSocket connection
         const socket = io();
@@ -918,20 +1071,119 @@
             updateUI();
         });
 
+        function dismissAlert() {
+            const alert = document.getElementById('alert');
+            alert.classList.add('hide');
+            setTimeout(() => {
+                alert.classList.remove('show', 'hide');
+            }, 300); // Wait for animation to complete
+        }
+
+        function setStatusFilter(status) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-filter') === status);
+            });
+        }
+
+        function filterFileList() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const list = document.getElementById('fileList');
+            const items = list.querySelectorAll('.file-item');
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const fileName = item.querySelector('.file-name').textContent.toLowerCase();
+                const itemStatus = item.classList.contains('warning') ? 'warning' : 
+                                   item.classList.contains('danger') ? 'danger' : 'safe';
+                
+                const matchesSearch = fileName.includes(searchQuery);
+                const matchesFilter = currentStatusFilter === 'all' || itemStatus === currentStatusFilter;
+                
+                if (matchesSearch && matchesFilter) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Show "no results" message if nothing matches
+            if (visibleCount === 0 && items.length > 0) {
+                const emptyMsg = list.querySelector('.empty');
+                if (!emptyMsg) {
+                    const newEmpty = document.createElement('div');
+                    newEmpty.className = 'empty';
+                    newEmpty.innerHTML = '<div class="empty-icon"><i class="fas fa-filter"></i></div><p>No files match your search</p>';
+                    list.appendChild(newEmpty);
+                }
+            } else if (visibleCount > 0) {
+                const emptyMsg = list.querySelector('.empty');
+                if (emptyMsg) emptyMsg.remove();
+            }
+        }
+
+        function showAlertWithTimeout() {
+            const alert = document.getElementById('alert');
+            alert.classList.remove('hide');
+            alert.classList.add('show');
+            setTimeout(dismissAlert, 5000); // Auto-dismiss after 5 seconds
+        }
+
+        function updateRiskMeter() {
+            // Calculate threat score (0-100)
+            let threatScore = 0;
+            
+            if (state.total > 0) {
+                // Base score on dangerous file percentage
+                const dangerPercentage = (state.danger / state.total) * 100;
+                threatScore += dangerPercentage * 0.6; // 60% weight
+                
+                // Additional score for total flags
+                const flagDensity = Math.min((state.totalFlags / (state.total * 3)) * 100, 100);
+                threatScore += flagDensity * 0.4; // 40% weight
+            }
+            
+            threatScore = Math.round(threatScore);
+            
+            // Update meter fill
+            const meterFill = document.getElementById('meterFill');
+            meterFill.style.width = threatScore + '%';
+            
+            // Update percentage text
+            document.getElementById('meterText').textContent = threatScore + '%';
+            
+            // Update risk label
+            const riskLabel = document.getElementById('riskLabel');
+            riskLabel.classList.remove('low', 'medium', 'high');
+            
+            if (threatScore < 33) {
+                riskLabel.textContent = 'LOW RISK';
+                riskLabel.classList.add('low');
+            } else if (threatScore < 67) {
+                riskLabel.textContent = 'MEDIUM RISK';
+                riskLabel.classList.add('medium');
+            } else {
+                riskLabel.textContent = 'HIGH RISK';
+                riskLabel.classList.add('high');
+            }
+        }
+
         function updateUI() {
-            document.getElementById('totalScanned').textContent = state.total;
-            document.getElementById('safeFiles').textContent = state.safe;
-            document.getElementById('suspiciousFiles').textContent = state.suspicious;
-            document.getElementById('dangerFiles').textContent = state.danger;
-            document.getElementById('extensionFlags').textContent = state.extensionFlags;
-            document.getElementById('keywordFlags').textContent = state.keywordFlags;
-            document.getElementById('entropyFlags').textContent = state.entropyFlags;
-            document.getElementById('totalFlags').textContent = state.totalFlags;
+            animateValue('totalScanned', state.total);
+            animateValue('safeFiles', state.safe);
+            animateValue('suspiciousFiles', state.suspicious);
+            animateValue('dangerFiles', state.danger);
+            animateValue('extensionFlags', state.extensionFlags);
+            animateValue('keywordFlags', state.keywordFlags);
+            animateValue('entropyFlags', state.entropyFlags);
+            animateValue('totalFlags', state.totalFlags);
             
             updateChart();
+            updateRiskMeter();
             
             if (state.danger > 0) {
-                document.getElementById('alert').classList.add('show');
+                showAlertWithTimeout();
             }
         }
 
@@ -1150,7 +1402,7 @@
                             legend: {
                                 position: 'bottom',
                                 labels: {
-                                    color: '#1a1a1a',
+                                    color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim(),
                                     padding: 20,
                                     font: {
                                         size: 13,
