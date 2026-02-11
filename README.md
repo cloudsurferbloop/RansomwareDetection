@@ -30,3 +30,36 @@ High Shannon entropy values
 File Upload & Instant Analysis
 
 Live Activity Log with timestamps
+
+# Architecture
+Backend
+
+Python
+
+Flask
+
+Flask-SocketIO
+
+Frontend
+
+HTML
+
+CSS
+
+JavaScript
+
+Chart.js
+
+Communication
+
+WebSocket-based real-time updates
+
+# The system follows a modular architecture separating:
+
+Detection engine
+
+API layer
+
+Real-time event streaming
+
+Visualization dashboard
