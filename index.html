@@ -6,7 +6,40 @@
     <title>Ransomware Detection</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #fafafa;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --text-muted: #4b5563;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --icon-color: #8b5cf6;
+            --safe-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        body.dark-theme {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #0f0f0f;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b0b0b0;
+            --text-muted: #a0a0a0;
+            --border-color: #3a3a3a;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+            --icon-color: #a78bfa;
+            --safe-color: #10b981;
+            --warning-color: #fbbf24;
+            --danger-color: #f87171;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,8 +48,9 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f8f9fa;
-            color: #1a1a1a;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .app {
@@ -27,21 +61,22 @@
         /* Sidebar */
         .sidebar {
             width: 240px;
-            background: #ffffff;
-            border-right: 1px solid #e5e7eb;
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .brand {
             padding: 24px 20px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .brand h2 {
             font-size: 16px;
-            color: #1a1a1a;
+            color: var(--text-primary);
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -51,6 +86,7 @@
         .brand-icon {
             font-size: 24px;
             filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
+            color: #8b5cf6;
         }
 
         .nav {
@@ -64,7 +100,7 @@
         .nav-label {
             padding: 0 20px 8px;
             font-size: 11px;
-            color: #6b7280;
+            color: var(--text-secondary);
             text-transform: uppercase;
             font-weight: 700;
             letter-spacing: 0.5px;
@@ -72,7 +108,7 @@
 
         .nav-item {
             padding: 12px 20px;
-            color: #4b5563;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -84,14 +120,19 @@
         }
 
         .nav-item:hover {
-            background: #f3f4f6;
-            color: #8b5cf6;
+            background: var(--bg-tertiary);
+            color: var(--icon-color);
         }
 
         .nav-item.active {
             background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
             color: #7c3aed;
             font-weight: 600;
+        }
+
+        body.dark-theme .nav-item.active {
+            background: linear-gradient(135deg, #3d3d5c 0%, #4a4a6f 100%);
+            color: #a78bfa;
         }
 
         .nav-item.active::before {
@@ -107,30 +148,38 @@
         .nav-icon {
             width: 18px;
             height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon i {
+            font-size: 16px;
         }
 
         /* Main */
         .main {
             flex: 1;
             overflow-y: auto;
-            background: #f8f9fa;
+            background: var(--bg-secondary);
         }
 
         .header {
             padding: 28px 32px;
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .header h1 {
             font-size: 28px;
             font-weight: 700;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #1a1a1a 0%, #4b5563 100%);
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-muted) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -140,6 +189,25 @@
             display: flex;
             gap: 12px;
             align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            background: var(--border-color);
+            transform: scale(1.05);
         }
 
         .status {
@@ -158,6 +226,10 @@
         .status.disconnected {
             background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             color: #991b1b;
+        }
+
+        body.dark-theme .status {
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
         }
 
         .status-dot {
@@ -190,18 +262,18 @@
         }
 
         .stat-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 24px;
             position: relative;
             transition: all 0.3s;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-sm);
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
         }
 
         .stat-card::before {
@@ -236,7 +308,7 @@
 
         .stat-label {
             font-size: 13px;
-            color: #6b7280;
+            color: var(--text-secondary);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -244,88 +316,108 @@
 
         .stat-icon {
             font-size: 24px;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            opacity: 0.6;
+            color: #8b5cf6;
         }
 
         .stat-value {
             font-size: 36px;
             font-weight: 700;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #1a1a1a 0%, #4b5563 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
         /* Upload Zone */
-        .upload-zone {
-            background: #ffffff;
-            border: 3px dashed #d1d5db;
-            border-radius: 20px;
-            padding: 60px 40px;
+        .upload-section {
+            background: var(--bg-primary);
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 48px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
             margin-bottom: 32px;
+            transition: all 0.3s;
+            cursor: pointer;
             position: relative;
-            overflow: hidden;
         }
 
-        .upload-zone::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .upload-zone:hover {
+        .upload-section:hover {
             border-color: #8b5cf6;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(139, 92, 246, 0.1);
+            background: #faf5ff;
         }
 
-        .upload-zone:hover::before {
-            opacity: 1;
+        body.dark-theme .upload-section:hover {
+            background: #2a2530;
         }
 
-        .upload-zone.dragging {
+        .upload-section.dragging {
             border-color: #8b5cf6;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
-            box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            transform: scale(1.02);
         }
 
-        .upload-zone.uploading {
+        body.dark-theme .upload-section.dragging {
+            background: linear-gradient(135deg, #3d3d5c 0%, #4a4a6f 100%);
+        }
+
+        .upload-section.uploading {
             pointer-events: none;
             opacity: 0.6;
         }
 
         .upload-icon {
-            font-size: 56px;
+            font-size: 64px;
             margin-bottom: 16px;
-            filter: drop-shadow(0 4px 8px rgba(139, 92, 246, 0.2));
-            position: relative;
-            z-index: 1;
+            display: block;
+            color: #8b5cf6;
         }
 
-        .upload-title {
-            font-size: 18px;
-            color: #1a1a1a;
+        .upload-section h3 {
+            font-size: 20px;
             margin-bottom: 8px;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
+            color: var(--text-primary);
         }
 
-        .upload-subtitle {
+        .upload-section p {
+            color: var(--text-secondary);
             font-size: 14px;
-            color: #6b7280;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 20px;
+        }
+
+        .upload-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
         }
 
         /* Grid Layout */
@@ -333,108 +425,70 @@
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 24px;
-            margin-bottom: 32px;
         }
 
-        .card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
+        /* Panel */
+        .panel {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 28px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        .card-header {
+        .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .card-title {
+        .panel-title {
             font-size: 18px;
             font-weight: 700;
-            color: #1a1a1a;
-        }
-
-        .btn {
-            background: #ffffff;
-            border: 1px solid #d1d5db;
-            color: #4b5563;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn:hover {
-            background: #f3f4f6;
-            color: #1a1a1a;
-            border-color: #9ca3af;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: var(--text-primary);
         }
 
         /* File List */
         .file-list {
-            max-height: 420px;
+            max-height: 500px;
             overflow-y: auto;
         }
 
         .file-item {
             display: flex;
             align-items: center;
+            gap: 16px;
             padding: 16px;
-            background: #f9fafb;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             transition: all 0.2s;
-            animation: slideIn 0.3s ease;
-            border: 1px solid #f3f4f6;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            background: var(--bg-tertiary);
         }
 
         .file-item:hover {
-            background: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            border-color: #8b5cf6;
+            background: var(--bg-primary);
             transform: translateX(4px);
-            border-color: #e5e7eb;
         }
 
         .file-status-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 16px;
-            font-size: 20px;
+            font-size: 28px;
+            min-width: 32px;
+            text-align: center;
+            color: #10b981;
         }
 
-        .file-status-icon.safe { 
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        .file-item.warning .file-status-icon {
+            color: #f59e0b;
         }
-        .file-status-icon.warning { 
-            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
-        }
-        .file-status-icon.danger { 
-            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+
+        .file-item.danger .file-status-icon {
+            color: #ef4444;
         }
 
         .file-info {
@@ -442,162 +496,189 @@
         }
 
         .file-name {
-            font-size: 14px;
-            color: #1a1a1a;
-            margin-bottom: 6px;
             font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 14px;
         }
 
         .file-meta {
             font-size: 12px;
-            color: #6b7280;
-        }
-
-        .file-entropy {
-            padding: 6px 14px;
-            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
-            border-radius: 8px;
-            font-size: 12px;
-            color: #7c3aed;
-            font-weight: 700;
-            box-shadow: 0 2px 4px rgba(139, 92, 246, 0.1);
+            color: var(--text-secondary);
+            margin-bottom: 8px;
         }
 
         .flag-list {
             display: flex;
-            gap: 6px;
-            margin-top: 8px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .flag {
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 600;
+            display: inline-block;
         }
 
-        .flag.ext { 
-            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
-            color: #9a3412;
-        }
-        .flag.kw { 
-            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        .flag.ext {
+            background: #fee2e2;
             color: #991b1b;
         }
-        .flag.ent { 
-            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
-            color: #6b21a8;
+
+        .flag.kw {
+            background: #fef3c7;
+            color: #92400e;
         }
 
-        /* Chart */
-        .chart-wrapper {
-            height: 320px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        .flag.ent {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .file-entropy {
+            font-size: 18px;
+            font-weight: 700;
+            color: #8b5cf6;
+            text-align: right;
+        }
+
+        .empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+            color: var(--border-color);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        /* Detection Flags */
+        .flag-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .flag-stat {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .flag-stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .flag-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         /* Alert */
         .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
             background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            border: 2px solid #fca5a5;
+            border: 2px solid #ef4444;
             border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 24px;
+            padding: 20px;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
             display: none;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        body.dark-theme .alert {
+            background: linear-gradient(135deg, #5f1f1f 0%, #6f2f2f 100%);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
         }
 
         .alert.show {
-            display: flex;
-            gap: 14px;
-            animation: slideDown 0.3s ease;
+            display: block;
         }
 
-        @keyframes slideDown {
+        @keyframes slideIn {
             from {
+                transform: translateX(400px);
                 opacity: 0;
-                transform: translateY(-10px);
             }
             to {
+                transform: translateX(0);
                 opacity: 1;
-                transform: translateY(0);
             }
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .alert-icon {
-            font-size: 24px;
-            filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3));
-        }
-
-        .alert-content h4 {
-            font-size: 15px;
+            font-size: 32px;
             color: #991b1b;
-            margin-bottom: 4px;
+        }
+
+        .alert-title {
             font-weight: 700;
+            color: #991b1b;
+            font-size: 18px;
         }
 
-        .alert-content p {
-            font-size: 13px;
-            color: #b91c1c;
+        body.dark-theme .alert-title {
+            color: #f87171;
         }
 
-        /* Empty State */
-        .empty {
-            text-align: center;
-            padding: 60px 20px;
-            color: #9ca3af;
-        }
-
-        .empty-icon {
-            font-size: 56px;
-            margin-bottom: 12px;
-            opacity: 0.4;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-        }
-
-        .empty p {
+        .alert-message {
+            color: #7f1d1d;
             font-size: 14px;
-            font-weight: 500;
+            line-height: 1.5;
         }
 
-        input[type="file"] {
-            display: none;
+        body.dark-theme .alert-message {
+            color: #fca5a5;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f3f4f6;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
-        }
-
-        @media (max-width: 1200px) {
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
             .grid {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
             .sidebar {
                 display: none;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -606,33 +687,21 @@
     <div class="app">
         <aside class="sidebar">
             <div class="brand">
-                <h2><span class="brand-icon">🛡️</span> SecureCheck</h2>
+                <h2><span class="brand-icon"><i class="fas fa-shield-alt"></i></span> Detector</h2>
             </div>
-            
             <nav class="nav">
                 <div class="nav-section">
-                    <div class="nav-label">Dashboards</div>
+                    <div class="nav-label">Main</div>
                     <div class="nav-item active">
-                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
-                        </svg>
-                        Overview
+                        <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>
+                        Dashboard
                     </div>
                 </div>
-
                 <div class="nav-section">
-                    <div class="nav-label">Pages</div>
-                    <div class="nav-item">
-                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        Files
-                    </div>
-                    <div class="nav-item">
-                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                        </svg>
-                        Analytics
+                    <div class="nav-label">Tools</div>
+                    <div class="nav-item" onclick="clearAll()">
+                        <span class="nav-icon"><i class="fas fa-trash"></i></span>
+                        Clear All
                     </div>
                 </div>
             </nav>
@@ -640,39 +709,44 @@
 
         <main class="main">
             <header class="header">
-                <div>
-                    <h1>Security Overview</h1>
-                </div>
+                <h1>Ransomware Detection</h1>
                 <div class="header-right">
-                    <div class="status" id="connectionStatus">
+                    <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="status" id="status">
                         <span class="status-dot"></span>
-                        <span id="statusText">Connecting...</span>
+                        <span>Connected</span>
                     </div>
                 </div>
             </header>
 
             <div class="content">
+                <!-- Alert -->
                 <div class="alert" id="alert">
-                    <div class="alert-icon">🚨</div>
-                    <div class="alert-content">
-                        <h4>Critical Threat Detected</h4>
-                        <p>Multiple ransomware indicators found in scanned files</p>
+                    <div class="alert-header">
+                        <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="alert-title">Threats Detected!</div>
+                    </div>
+                    <div class="alert-message">
+                        Potential ransomware files have been identified. Review the flagged files below.
                     </div>
                 </div>
 
+                <!-- Stats -->
                 <div class="stats">
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-label">Files Scanned</div>
-                            <div class="stat-icon">📊</div>
+                            <div class="stat-label">Total Scanned</div>
+                            <div class="stat-icon"><i class="fas fa-folder"></i></div>
                         </div>
                         <div class="stat-value" id="totalScanned">0</div>
                     </div>
 
                     <div class="stat-card safe">
                         <div class="stat-header">
-                            <div class="stat-label">Safe</div>
-                            <div class="stat-icon">✅</div>
+                            <div class="stat-label">Safe Files</div>
+                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                         </div>
                         <div class="stat-value" id="safeFiles">0</div>
                     </div>
@@ -680,7 +754,7 @@
                     <div class="stat-card warning">
                         <div class="stat-header">
                             <div class="stat-label">Suspicious</div>
-                            <div class="stat-icon">⚠️</div>
+                            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
                         </div>
                         <div class="stat-value" id="suspiciousFiles">0</div>
                     </div>
@@ -688,72 +762,71 @@
                     <div class="stat-card danger">
                         <div class="stat-header">
                             <div class="stat-label">Threats</div>
-                            <div class="stat-icon">🚨</div>
+                            <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
                         </div>
                         <div class="stat-value" id="dangerFiles">0</div>
                     </div>
                 </div>
 
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-label">Extension Flags</div>
-                            <div class="stat-icon">📎</div>
-                        </div>
-                        <div class="stat-value" id="extensionFlags">0</div>
+                <!-- Upload Zone -->
+                <div class="upload-section" id="uploadZone">
+                    <span class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></span>
+                    <h3>Drop Files or Folders Here</h3>
+                    <p>Drag and drop files or folders to scan for ransomware indicators</p>
+                    <div class="upload-buttons">
+                        <button class="btn" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-file"></i> Select Files
+                        </button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('folderInput').click()">
+                            <i class="fas fa-folder-open"></i> Select Folder
+                        </button>
                     </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-label">Keyword Flags</div>
-                            <div class="stat-icon">🔤</div>
-                        </div>
-                        <div class="stat-value" id="keywordFlags">0</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-label">Entropy Flags</div>
-                            <div class="stat-icon">🔐</div>
-                        </div>
-                        <div class="stat-value" id="entropyFlags">0</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-label">Total Flags</div>
-                            <div class="stat-icon">⚡</div>
-                        </div>
-                        <div class="stat-value" id="totalFlags">0</div>
-                    </div>
+                    <input type="file" id="fileInput" multiple style="display: none">
+                    <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none">
                 </div>
 
-                <div class="upload-zone" id="uploadZone">
-                    <div class="upload-icon">📁</div>
-                    <div class="upload-title">Drop files here to scan</div>
-                    <div class="upload-subtitle">or click to browse</div>
-                    <input type="file" id="fileInput" multiple>
-                </div>
-
+                <!-- Grid -->
                 <div class="grid">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Recent Scans</div>
-                            <button class="btn" onclick="clearAll()">Clear</button>
+                    <!-- File List -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">Scan Results</div>
                         </div>
                         <div class="file-list" id="fileList">
                             <div class="empty">
-                                <div class="empty-icon">📂</div>
+                                <div class="empty-icon"><i class="fas fa-inbox"></i></div>
                                 <p>No files scanned yet</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Threat Distribution</div>
+                    <!-- Analytics -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">Analytics</div>
                         </div>
-                        <div class="chart-wrapper">
+                        
+                        <div class="flag-stats">
+                            <div class="flag-stat">
+                                <div class="flag-stat-label">Extension</div>
+                                <div class="flag-stat-value" id="extensionFlags">0</div>
+                            </div>
+                            <div class="flag-stat">
+                                <div class="flag-stat-label">Keyword</div>
+                                <div class="flag-stat-value" id="keywordFlags">0</div>
+                            </div>
+                            <div class="flag-stat">
+                                <div class="flag-stat-label">Entropy</div>
+                                <div class="flag-stat-value" id="entropyFlags">0</div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; padding: 16px 0; border-top: 1px solid #e5e7eb; margin-bottom: 20px;">
+                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Total Flags</div>
+                            <div style="font-size: 32px; font-weight: 700; color: #1a1a1a;" id="totalFlags">0</div>
+                        </div>
+
+                        <div class="chart-container">
                             <canvas id="chart"></canvas>
                         </div>
                     </div>
@@ -763,10 +836,33 @@
     </div>
 
     <script>
-        // WebSocket connection
-        const socket = io('http://localhost:5000');
-        
-        const state = {
+        // Theme initialization
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                updateThemeIcon(true);
+            }
+        }
+
+        function updateThemeIcon(isDark) {
+            const icon = document.getElementById('themeToggle').querySelector('i');
+            icon.classList.remove('fa-moon', 'fa-sun');
+            icon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        // Initialize theme on page load
+        initTheme();
+
+        let state = {
             total: 0,
             safe: 0,
             suspicious: 0,
@@ -778,32 +874,29 @@
             fileHistory: []
         };
 
-        // Connection status handling
+        // WebSocket connection
+        const socket = io();
+        
         socket.on('connect', () => {
-            console.log('Connected to backend');
-            document.getElementById('connectionStatus').classList.remove('disconnected');
-            document.getElementById('statusText').textContent = 'Active';
+            console.log('WebSocket connected');
+            document.getElementById('status').classList.remove('disconnected');
+            document.getElementById('status').querySelector('span:last-child').textContent = 'Connected';
         });
 
         socket.on('disconnect', () => {
-            console.log('Disconnected from backend');
-            document.getElementById('connectionStatus').classList.add('disconnected');
-            document.getElementById('statusText').textContent = 'Disconnected';
+            console.log('WebSocket disconnected');
+            document.getElementById('status').classList.add('disconnected');
+            document.getElementById('status').querySelector('span:last-child').textContent = 'Disconnected';
         });
 
-        socket.on('connection_response', (data) => {
-            console.log('Connection response:', data);
-        });
-
-        // Real-time file scan updates
         socket.on('file_scanned', (result) => {
             console.log('File scanned:', result);
-            addToList(result);
             state.fileHistory.push(result);
-            updateChart();
+            addToList(result);
         });
 
         socket.on('stats_reset', () => {
+            console.log('Stats reset by server');
             state.total = 0;
             state.safe = 0;
             state.suspicious = 0;
@@ -851,8 +944,9 @@
             const item = document.createElement('div');
             item.className = 'file-item';
             
-            const icon = result.level === 'safe' ? '✅' : 
-                        result.level === 'warning' ? '⚠️' : '🚨';
+            const iconClass = result.level === 'safe' ? 'fa-check-circle' : 
+                              result.level === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle';
+            const icon = `<i class="fas ${iconClass}"></i>`;
             
             let flagsHTML = '';
             if (result.flags.length > 0) {
@@ -878,13 +972,58 @@
             list.insertBefore(item, list.firstChild);
         }
 
+        // Helper function to recursively get all files from DataTransferItemList
+        async function getAllFilesFromItems(items) {
+            const files = [];
+            
+            async function traverseFileTree(item, path = '') {
+                return new Promise((resolve) => {
+                    if (item.isFile) {
+                        item.file((file) => {
+                            files.push(file);
+                            resolve();
+                        });
+                    } else if (item.isDirectory) {
+                        const dirReader = item.createReader();
+                        dirReader.readEntries(async (entries) => {
+                            for (const entry of entries) {
+                                await traverseFileTree(entry, path + item.name + '/');
+                            }
+                            resolve();
+                        });
+                    }
+                });
+            }
+            
+            for (const item of items) {
+                const entry = item.webkitGetAsEntry();
+                if (entry) {
+                    await traverseFileTree(entry);
+                }
+            }
+            
+            return files;
+        }
+
         async function uploadFiles(files) {
             const zone = document.getElementById('uploadZone');
             zone.classList.add('uploading');
 
             const formData = new FormData();
-            for (let file of files) {
-                formData.append('files', file);
+            const timestamp = Date.now();
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                // Extract just the filename, removing any directory path
+                let filename = file.name;
+                if (file.webkitRelativePath) {
+                    filename = file.webkitRelativePath.split('/').pop();
+                }
+                
+                // Add a unique prefix to prevent collisions if multiple files have the same name
+                const uniqueFilename = `${timestamp}_${i}_${filename}`;
+                const newFile = new File([file], uniqueFilename, { type: file.type });
+                formData.append('files', newFile);
             }
 
             try {
@@ -893,7 +1032,15 @@
                     body: formData
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
                 
                 if (data.stats) {
                     state.total = data.stats.total;
@@ -910,7 +1057,7 @@
 
             } catch (error) {
                 console.error('Upload error:', error);
-                alert('Error uploading files. Make sure the backend is running.');
+                alert(`Error uploading files: ${error.message}\n\nMake sure the backend server is running on http://localhost:5000`);
             } finally {
                 zone.classList.remove('uploading');
             }
@@ -927,17 +1074,29 @@
             zone.classList.remove('dragging');
         });
         
-        zone.addEventListener('drop', (e) => {
+        zone.addEventListener('drop', async (e) => {
             e.preventDefault();
             zone.classList.remove('dragging');
-            uploadFiles(e.dataTransfer.files);
+            
+            // Check if items include folders
+            const items = Array.from(e.dataTransfer.items);
+            if (items.length > 0 && items[0].webkitGetAsEntry) {
+                // Use FileSystem API to handle folders
+                const files = await getAllFilesFromItems(items);
+                uploadFiles(files);
+            } else {
+                // Fallback to regular files
+                uploadFiles(e.dataTransfer.files);
+            }
         });
         
-        zone.addEventListener('click', () => {
-            document.getElementById('fileInput').click();
-        });
-        
+        // Handle file input (regular files)
         document.getElementById('fileInput').addEventListener('change', (e) => {
+            uploadFiles(e.target.files);
+        });
+
+        // Handle folder input
+        document.getElementById('folderInput').addEventListener('change', (e) => {
             uploadFiles(e.target.files);
         });
 
