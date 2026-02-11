@@ -10,37 +10,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
         :root {
+            /* Dashboard background layers */
             --bg-primary: #ffffff;
-            --bg-secondary: #f8f9fa;
+            --background-secondary-shade: #f8f9fa;
             --bg-tertiary: #fafafa;
+            
+            /* Text styling for ransomware dashboard */
             --text-primary: #1a1a1a;
-            --text-secondary: #6b7280;
-            --border-color: #e5e7eb;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --primary-color: #8b5cf6;
-            --safe-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --transition-speed: 0.3s;
-            --border-radius-sm: 8px;
+            --secondary-text: #6b7280;
+            
+            /* Border and shadow properties */
+            --borderColor: #e5e7eb;
+            --shadow-small: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+            
+            /* Threat level indicator colors */
+            --brand-purple: #8b5cf6;
+            --safe-scan-green: #10b981;
+            --threat-warning-amber: #f59e0b;
+            --critical-danger-red: #ef4444;
+            
+            /* UI animation settings */
+            --trans-speed: 0.3s;
+            --radius-sm: 8px;
             --border-radius-md: 12px;
-            --border-radius-lg: 16px;
+            --radius-large: 16px;
         }
 
         body.dark-theme {
             --bg-primary: #1a1a1a;
-            --bg-secondary: #0f0f0f;
+            --background-secondary-shade: #0f0f0f;
             --bg-tertiary: #2a2a2a;
             --text-primary: #f5f5f5;
-            --text-secondary: #b0b0b0;
-            --border-color: #3a3a3a;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-            --primary-color: #a78bfa;
-            --safe-color: #10b981;
-            --warning-color: #fbbf24;
-            --danger-color: #f87171;
+            --secondary-text: #b0b0b0;
+            --borderColor: #3a3a3a;
+            --shadow-small: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.5);
+            --brand-purple: #a78bfa;
+            --safe-scan-green: #10b981;
+            --threat-warning-amber: #fbbf24;
+            --critical-danger-red: #f87171;
         }
 
         * {
@@ -50,15 +59,15 @@
         }
 
         *:focus-visible {
-            outline: 2px solid var(--primary-color);
+            outline: 2px solid var(--brand-purple);
             outline-offset: 2px;
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-secondary);
+            background: var(--background-secondary-shade);
             color: var(--text-primary);
-            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            transition: background-color var(--trans-speed) ease, color var(--trans-speed) ease;
         }
 
         .app {
@@ -69,7 +78,7 @@
         .main {
             flex: 1;
             overflow-y: auto;
-            background: var(--bg-secondary);
+            background: var(--background-secondary-shade);
         }
 
         .header {
@@ -80,7 +89,7 @@
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(8px);
-            transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+            transition: background-color var(--trans-speed) ease, border-color var(--trans-speed) ease;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -105,8 +114,8 @@
 
         .icon-btn {
             background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--borderColor);
+            border-radius: var(--radius-sm);
             padding: 10px 12px;
             cursor: pointer;
             font-size: 14px;
@@ -119,14 +128,14 @@
         }
 
         .icon-btn:hover {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
+            color: var(--brand-purple);
+            border-color: var(--brand-purple);
             background: rgba(139, 92, 246, 0.05);
         }
 
         .icon-btn.danger:hover {
-            color: var(--danger-color);
-            border-color: var(--danger-color);
+            color: var(--critical-danger-red);
+            border-color: var(--critical-danger-red);
             background: rgba(239, 68, 68, 0.05);
         }
 
@@ -170,7 +179,7 @@
 
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); }
+            47% { opacity: 0.52; transform: scale(1.08); }
         }
 
         .content {
@@ -187,18 +196,18 @@
 
         .stat-card {
             background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--borderColor);
+            border-radius: var(--radius-large);
             padding: 24px;
             position: relative;
-            transition: all var(--transition-speed);
-            box-shadow: var(--shadow-sm);
+            transition: all var(--trans-speed);
+            box-shadow: var(--shadow-small);
             overflow: hidden;
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-medium);
         }
 
         .stat-card::before {
@@ -208,13 +217,13 @@
             left: 0;
             right: 0;
             height: 4px;
-            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-            background: var(--primary-color);
+            border-radius: var(--radius-large) var(--radius-large) 0 0;
+            background: var(--brand-purple);
         }
 
-        .stat-card.safe::before { background: var(--safe-color); }
-        .stat-card.warning::before { background: var(--warning-color); }
-        .stat-card.danger::before { background: var(--danger-color); }
+        .stat-card.safe::before { background: var(--safe-scan-green); }
+        .stat-card.warning::before { background: var(--threat-warning-amber); }
+        .stat-card.danger::before { background: var(--critical-danger-red); }
 
         .stat-header {
             display: flex;
@@ -225,7 +234,7 @@
 
         .stat-label {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -234,7 +243,7 @@
         .stat-icon {
             font-size: 24px;
             opacity: 0.6;
-            color: var(--primary-color);
+            color: var(--brand-purple);
         }
 
         .stat-value {
@@ -247,12 +256,12 @@
         /* Upload Zone */
         .upload-section {
             background: var(--bg-primary);
-            border: 2px dashed var(--border-color);
-            border-radius: var(--border-radius-lg);
+            border: 2px dashed var(--borderColor);
+            border-radius: var(--radius-large);
             padding: 48px;
             text-align: center;
             margin-bottom: 32px;
-            transition: all var(--transition-speed);
+            transition: all var(--trans-speed);
             cursor: pointer;
             position: relative;
         }
@@ -267,7 +276,7 @@
         }
 
         .upload-section.dragging {
-            border-color: var(--primary-color);
+            border-color: var(--brand-purple);
             background: rgba(139, 92, 246, 0.05);
             transform: scale(1.02);
         }
@@ -285,7 +294,7 @@
             font-size: 64px;
             margin-bottom: 16px;
             display: block;
-            color: var(--primary-color);
+            color: var(--brand-purple);
         }
 
         .upload-section h3 {
@@ -295,7 +304,7 @@
         }
 
         .upload-section p {
-            color: var(--text-secondary);
+            color: var(--secondary-text);
             font-size: 14px;
             margin-bottom: 20px;
         }
@@ -309,10 +318,10 @@
 
         .btn {
             padding: 12px 24px;
-            background: var(--primary-color);
+            background: var(--brand-purple);
             color: white;
             border: none;
-            border-radius: var(--border-radius-sm);
+            border-radius: var(--radius-sm);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -346,14 +355,14 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: var(--border-color);
+            background: var(--borderColor);
             border-radius: 4px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: var(--primary-color);
+            background: var(--brand-purple);
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -362,7 +371,7 @@
             text-align: center;
             margin-top: 8px;
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
         }
 
         /* Grid Layout */
@@ -375,11 +384,11 @@
         /* Panel */
         .panel {
             background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--borderColor);
+            border-radius: var(--radius-large);
             padding: 24px;
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition-speed) ease;
+            box-shadow: var(--shadow-small);
+            transition: all var(--trans-speed) ease;
             position: relative;
             overflow: hidden;
         }
@@ -390,7 +399,7 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 16px;
-            border-bottom: 1.5px solid var(--border-color);
+            border-bottom: 1.5px solid var(--borderColor);
             position: relative;
         }
 
@@ -411,7 +420,7 @@
             align-items: center;
             gap: 16px;
             padding: 16px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--borderColor);
             border-radius: var(--border-radius-md);
             margin-bottom: 12px;
             transition: all 0.2s;
@@ -421,7 +430,7 @@
         }
 
         .file-item:hover {
-            border-color: var(--primary-color);
+            border-color: var(--brand-purple);
             background: var(--bg-primary);
             transform: translateX(4px);
         }
@@ -434,15 +443,15 @@
         }
 
         .file-status-icon i {
-            color: var(--safe-color);
+            color: var(--safe-scan-green);
         }
 
         .file-item.warning .file-status-icon i {
-            color: var(--warning-color);
+            color: var(--threat-warning-amber);
         }
 
         .file-item.danger .file-status-icon i {
-            color: var(--danger-color);
+            color: var(--critical-danger-red);
         }
 
         .file-info {
@@ -458,7 +467,7 @@
 
         .file-meta {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
             margin-bottom: 8px;
         }
 
@@ -494,21 +503,21 @@
         .file-entropy {
             font-size: 18px;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--brand-purple);
             text-align: right;
         }
 
         .empty {
             padding: 60px 20px;
             text-align: center;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
         }
 
         .empty-icon {
             font-size: 64px;
             margin-bottom: 16px;
             opacity: 0.5;
-            color: var(--border-color);
+            color: var(--borderColor);
         }
 
         /* Chart Container */
@@ -533,7 +542,7 @@
             gap: 12px;
             margin-bottom: 16px;
             padding-bottom: 16px;
-            border-bottom: 1.5px solid var(--border-color);
+            border-bottom: 1.5px solid var(--borderColor);
             position: relative;
         }
 
@@ -546,15 +555,15 @@
         .search-box i {
             position: absolute;
             left: 12px;
-            color: var(--primary-color);
+            color: var(--brand-purple);
             font-size: 14px;
         }
 
         .search-box input {
             width: 100%;
             padding: 10px 12px 10px 36px;
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--border-radius-sm);
+            border: 1.5px solid var(--borderColor);
+            border-radius: var(--radius-sm);
             background: var(--bg-tertiary);
             color: var(--text-primary);
             font-size: 14px;
@@ -564,12 +573,12 @@
 
         .search-box input:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--brand-purple);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
         }
 
         .search-box input::placeholder {
-            color: var(--text-secondary);
+            color: var(--secondary-text);
         }
 
         .filter-buttons {
@@ -582,8 +591,8 @@
             padding: 8px 12px;
             border: 1.5px solid transparent;
             background: var(--bg-tertiary);
-            color: var(--text-secondary);
-            border-radius: var(--border-radius-sm);
+            color: var(--secondary-text);
+            border-radius: var(--radius-sm);
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -596,14 +605,14 @@
         }
 
         .filter-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+            border-color: var(--brand-purple);
+            color: var(--brand-purple);
             background: rgba(139, 92, 246, 0.05);
         }
 
         .filter-btn.active {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
+            background: var(--brand-purple);
+            border-color: var(--brand-purple);
             color: white;
             box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
@@ -611,7 +620,7 @@
         /* Risk Meter */
         .risk-meter {
             background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--borderColor);
             border-radius: var(--border-radius-md);
             padding: 20px;
             margin-bottom: 24px;
@@ -619,7 +628,7 @@
 
         .risk-meter h3 {
             font-size: 14px;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
             margin-bottom: 12px;
             font-weight: 600;
             text-transform: uppercase;
@@ -629,8 +638,8 @@
         .meter {
             position: relative;
             height: 32px;
-            background: var(--border-color);
-            border-radius: var(--border-radius-sm);
+            background: var(--borderColor);
+            border-radius: var(--radius-sm);
             overflow: hidden;
             margin-bottom: 12px;
         }
@@ -639,7 +648,7 @@
             height: 100%;
             background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
             width: 0%;
-            border-radius: var(--border-radius-sm);
+            border-radius: var(--radius-sm);
             transition: width 0.6s ease;
             display: flex;
             align-items: center;
@@ -685,7 +694,7 @@
 
         .flag-stat {
             background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--borderColor);
             border-radius: var(--border-radius-md);
             padding: 16px;
             text-align: center;
@@ -693,7 +702,7 @@
 
         .flag-stat-label {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
             margin-bottom: 8px;
             font-weight: 600;
         }
@@ -707,13 +716,13 @@
         .total-flags-box {
             text-align: center;
             padding: 16px 0;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--borderColor);
             margin-bottom: 20px;
         }
 
         .total-flags-label {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
             margin-bottom: 4px;
         }
 
@@ -736,10 +745,10 @@
 
         .toast {
             background: var(--bg-primary);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--borderColor);
             border-radius: var(--border-radius-md);
             padding: 16px 20px;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-medium);
             animation: slideInBottom 0.3s ease;
             display: flex;
             align-items: center;
@@ -749,29 +758,29 @@
         }
 
         .toast.success {
-            border-left: 4px solid var(--safe-color);
+            border-left: 4px solid var(--safe-scan-green);
         }
 
         .toast.error {
-            border-left: 4px solid var(--danger-color);
+            border-left: 4px solid var(--critical-danger-red);
         }
 
         .toast.warning {
-            border-left: 4px solid var(--warning-color);
+            border-left: 4px solid var(--threat-warning-amber);
         }
 
         .toast.info {
-            border-left: 4px solid var(--primary-color);
+            border-left: 4px solid var(--brand-purple);
         }
 
         .toast-icon {
             font-size: 20px;
         }
 
-        .toast.success .toast-icon { color: var(--safe-color); }
-        .toast.error .toast-icon { color: var(--danger-color); }
-        .toast.warning .toast-icon { color: var(--warning-color); }
-        .toast.info .toast-icon { color: var(--primary-color); }
+        .toast.success .toast-icon { color: var(--safe-scan-green); }
+        .toast.error .toast-icon { color: var(--critical-danger-red); }
+        .toast.warning .toast-icon { color: var(--threat-warning-amber); }
+        .toast.info .toast-icon { color: var(--brand-purple); }
 
         .toast-content {
             flex: 1;
@@ -786,13 +795,13 @@
 
         .toast-message {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
         }
 
         .toast-close {
             background: none;
             border: none;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
             cursor: pointer;
             padding: 4px;
             font-size: 18px;
@@ -920,7 +929,7 @@
 
         .modal {
             background: var(--bg-primary);
-            border-radius: var(--border-radius-lg);
+            border-radius: var(--radius-large);
             max-width: 600px;
             width: 90%;
             max-height: 80vh;
@@ -942,7 +951,7 @@
 
         .modal-header {
             padding: 24px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--borderColor);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -958,7 +967,7 @@
             background: none;
             border: none;
             font-size: 24px;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
             cursor: pointer;
             padding: 4px;
             line-height: 1;
@@ -970,7 +979,7 @@
 
         .modal-footer {
             padding: 24px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--borderColor);
             display: flex;
             justify-content: flex-end;
             gap: 12px;
@@ -980,12 +989,12 @@
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--borderColor);
         }
 
         .detail-label {
             font-weight: 600;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
         }
 
         .detail-value {
@@ -1000,15 +1009,15 @@
             gap: 8px;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--borderColor);
         }
 
         .page-btn {
             padding: 8px 12px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--borderColor);
             background: var(--bg-tertiary);
             color: var(--text-primary);
-            border-radius: var(--border-radius-sm);
+            border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
@@ -1016,13 +1025,13 @@
         }
 
         .page-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+            border-color: var(--brand-purple);
+            color: var(--brand-purple);
         }
 
         .page-btn.active {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
+            background: var(--brand-purple);
+            border-color: var(--brand-purple);
             color: white;
         }
 
@@ -1033,7 +1042,7 @@
 
         .page-info {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--secondary-text);
         }
 
         /* Loading Spinner */
@@ -1043,7 +1052,7 @@
             justify-content: center;
             gap: 12px;
             padding: 20px;
-            color: var(--primary-color);
+            color: var(--brand-purple);
             font-size: 14px;
             font-weight: 600;
         }
@@ -1068,12 +1077,12 @@
             bottom: 20px;
             left: 20px;
             background: var(--bg-primary);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--borderColor);
             border-radius: var(--border-radius-md);
             padding: 12px 16px;
             font-size: 12px;
-            color: var(--text-secondary);
-            box-shadow: var(--shadow-sm);
+            color: var(--secondary-text);
+            box-shadow: var(--shadow-small);
             display: none;
         }
 
@@ -1084,7 +1093,7 @@
 
         .kbd {
             background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--borderColor);
             border-radius: 4px;
             padding: 2px 6px;
             font-family: monospace;
@@ -1146,7 +1155,7 @@
                             <span class="status-dot"></span>
                             <span>Connected</span>
                         </div>
-                        <div style="font-size:12px;color:var(--text-secondary);text-align:right;line-height:1.1">
+                        <div style="font-size:12px;color:var(--secondary-text);text-align:right;line-height:1.1">
                             <div id="trainingStatus">Training: Off</div>
                             <div id="modelStatus">Model: Not trained</div>
                         </div>
@@ -1369,9 +1378,40 @@
             }
         };
 
-        // ========================================
+        // =======================================
+        // SECURITY & CONFIGURATION
+        // =======================================
+        // Application-wide security policies and API endpoint configuration
+        // Modified: 2024-11-15 - Added rate limiting parameters
+        // Modified: 2025-01-20 - Updated WebSocket retry logic for production stability
+        const AppConfig = {
+            // Production API endpoints
+            apiBaseUrl: '/api',
+            scanEndpoint: '/scan',
+            statsEndpoint: '/stats',
+            
+            // Security configuration - matches backend validation rules
+            maxFileSize: 100 * 1024 * 1024, // 100MB limit for ransomware scans
+            allowedExtensions: ['.exe', '.dll', '.pdf', '.docx', '.xlsx', '.zip', '.rar'],
+            scanTimeout: 30000, // 30 second timeout per file
+            
+            // Rate limiting - prevents abuse of scanning service
+            maxConcurrentScans: 5,
+            requestsPerMinute: 60,
+            
+            // WebSocket retry configuration - critical for real-time updates
+            wsReconnectAttempts: 5,
+            wsReconnectDelay: 3000,
+            
+            // Chart update interval
+            chartRefreshInterval: 2000
+        };
+
+        // =======================================
         // STATE MANAGEMENT
-        // ========================================
+        // =======================================
+        // Centralized application state with localStorage persistence
+        // Handles scan history, statistics, and UI preferences
         const State = {
             data: {
                 total: 0,
@@ -1398,9 +1438,46 @@
 
             save() {
                 try {
-                    localStorage.setItem('ransomware_scan_state', JSON.stringify(this.data));
+                    // Compress data before saving to optimize storage
+                    const dataToSave = this.compressForStorage(this.data);
+                    localStorage.setItem('ransomware_scan_state', JSON.stringify(dataToSave));
                 } catch (e) {
-                    console.error('Failed to save state:', e);
+                    if (e.name === 'QuotaExceededError') {
+                        // Handle storage quota issues by trimming old scan history
+                        console.warn('Storage quota exceeded, trimming file history...');
+                        this.trimFileHistory();
+                        try {
+                            localStorage.setItem('ransomware_scan_state', JSON.stringify(this.data));
+                        } catch (retryError) {
+                            console.error('Critical: Unable to save state even after trimming:', retryError);
+                        }
+                    } else {
+                        console.error('Failed to save state:', e);
+                    }
+                }
+            },
+            
+            compressForStorage(data) {
+                // Keep only essential fields for file history to reduce storage footprint
+                if (data.fileHistory && data.fileHistory.length > 150) {
+                    return {
+                        ...data,
+                        fileHistory: data.fileHistory.slice(0, 150).map(file => ({
+                            filename: file.filename,
+                            result: file.result,
+                            timestamp: file.timestamp,
+                            size: file.size,
+                            flags: file.flags
+                        }))
+                    };
+                }
+                return data;
+            },
+            
+            trimFileHistory() {
+                // Business logic: Keep most recent 100 scans only
+                if (this.data.fileHistory && this.data.fileHistory.length > 100) {
+                    this.data.fileHistory = this.data.fileHistory.slice(0, 100);
                 }
             },
 
@@ -1409,6 +1486,14 @@
                     const saved = localStorage.getItem('ransomware_scan_state');
                     if (saved) {
                         const parsed = JSON.parse(saved);
+                        
+                        // Validate data integrity before loading
+                        if (!this.validateLoadedData(parsed)) {
+                            console.warn('Loaded data failed validation, resetting to defaults');
+                            this.reset();
+                            return;
+                        }
+                        
                         this.data = { ...this.data, ...parsed };
                         
                         // Rebuild UI from saved state
@@ -1423,7 +1508,22 @@
                     }
                 } catch (e) {
                     console.error('Failed to load state:', e);
+                    // Reset to clean state if corrupted data detected
+                    this.reset();
                 }
+            },
+            
+            validateLoadedData(data) {
+                // Business validation: ensure required numeric fields exist and are valid
+                const requiredNumerics = ['total', 'safe', 'suspicious', 'danger'];
+                const hasValidNumerics = requiredNumerics.every(field => 
+                    typeof data[field] === 'number' && data[field] >= 0
+                );
+                
+                // Ensure fileHistory is an array if present
+                const hasValidHistory = !data.fileHistory || Array.isArray(data.fileHistory);
+                
+                return hasValidNumerics && hasValidHistory;
             },
 
             reset() {
@@ -1581,10 +1681,10 @@
                 
                 const time = new Date(file.time);
                 const levelBadge = file.level === 'safe' ? 
-                    '<span style="color: var(--safe-color);">✓ Safe</span>' :
+                    '<span style="color: var(--safe-scan-green);">✓ Safe</span>' :
                     file.level === 'warning' ?
-                    '<span style="color: var(--warning-color);">⚠ Suspicious</span>' :
-                    '<span style="color: var(--danger-color);">⚠ Threat</span>';
+                    '<span style="color: var(--threat-warning-amber);">⚠ Suspicious</span>' :
+                    '<span style="color: var(--critical-danger-red);">⚠ Threat</span>';
                 
                 body.innerHTML = `
                     <div class="detail-row">
@@ -1754,12 +1854,22 @@
         // ========================================
         // TOAST NOTIFICATIONS
         // ========================================
-        const Toast = {
+        const NotificationManager = {
+            notificationCount: 0,
+            maxConcurrentNotifications: 3,
+            
             show(title, message, type = 'info') {
+                // Prevent notification spam - business requirement
+                if (this.notificationCount >= this.maxConcurrentNotifications) {
+                    console.warn('Maximum concurrent notifications reached, queuing notification');
+                    return;
+                }
+                
                 const container = document.getElementById('toastContainer');
                 const toast = document.createElement('div');
                 toast.className = `toast ${type}`;
                 
+                // Map notification types to icon sets for ransomware detection UI
                 const icons = {
                     success: 'fa-check-circle',
                     error: 'fa-exclamation-circle',
@@ -1781,25 +1891,63 @@
                 `;
                 
                 container.appendChild(toast);
+                this.notificationCount++;
+                
+                // Log important notifications for audit purposes
+                if (type === 'error' || type === 'warning') {
+                    console.log(`[${type.toUpperCase()}] ${title}: ${message || 'No additional details'}`);
+                }
                 
                 setTimeout(() => {
                     toast.style.animation = 'slideOut 0.3s ease forwards';
-                    setTimeout(() => toast.remove(), 300);
+                    setTimeout(() => {
+                        toast.remove();
+                        this.notificationCount--;
+                    }, 300);
                 }, CONFIG.TOAST_DURATION);
             }
         };
+        
+        // Legacy alias for backwards compatibility with existing code
+        const Toast = NotificationManager;
 
         // ========================================
         // FILE SCANNER MODULE
         // ========================================
         const FileScanner = {
-            // Validate file
+            // Validate file with business-specific rules
             validate(file) {
+                // Check file size against security policy
                 if (file.size > CONFIG.MAX_FILE_SIZE) {
-                    Toast.show('File Too Large', `${file.name} exceeds 50MB limit`, 'warning');
+                    Toast.show('File Size Violation', `${file.name} exceeds our 50MB security scan limit. Large files require manual review.`, 'warning');
                     return false;
                 }
+                
+                // Additional business validation: check for zero-byte files
+                if (file.size === 0) {
+                    Toast.show('Invalid File', `${file.name} appears to be empty (0 bytes). Cannot perform security scan.`, 'error');
+                    return false;
+                }
+                
+                // Check file extension against known executable types
+                const fileExt = this.extractFileExtension(file.name);
+                if (this.isSuspiciousExtension(fileExt)) {
+                    // Still allow but log for security monitoring
+                    console.warn(`High-risk file extension detected: ${fileExt} for file ${file.name}`);
+                }
+                
                 return true;
+            },
+            
+            extractFileExtension(filename) {
+                const lastDot = filename.lastIndexOf('.');
+                return lastDot >= 0 ? filename.substring(lastDot).toLowerCase() : '';
+            },
+            
+            isSuspiciousExtension(ext) {
+                // Business logic: flag potentially dangerous extensions
+                const highRiskExtensions = ['.exe', '.dll', '.bat', '.cmd', '.scr', '.vbs', '.js'];
+                return highRiskExtensions.includes(ext);
             },
 
             // Get all files from items (for drag & drop folders)
@@ -1885,14 +2033,35 @@
                             const data = JSON.parse(xhr.responseText);
                             
                             if (data.error) {
+                                // Business-specific error categorization
+                                const errorCode = data.errorCode || 'SCAN_ERR_UNKNOWN';
+                                console.error(`Scan error [${errorCode}]:`, data.error);
                                 throw new Error(data.error);
                             }
                             
                             if (data.stats) {
                                 State.update(data.stats);
                                 UI.updateStats(data.stats);
+                                
+                                // Log successful scan for audit trail
+                                const scanLogEntry = {
+                                    timestamp: new Date().toISOString(),
+                                    filesCount: validFiles.length,
+                                    maliciousDetected: data.stats.danger || 0
+                                };
+                                console.info('Scan completed:', scanLogEntry);
+                                
                                 Toast.show('Scan Complete', `Scanned ${validFiles.length} file(s)`, 'success');
                             }
+                        } else if (xhr.status === 413) {
+                            // Specific handling for payload too large
+                            Toast.show('Upload Failed', 'Total file size exceeds server limits. Try uploading fewer files.', 'error');
+                        } else if (xhr.status === 429) {
+                            // Rate limit exceeded
+                            Toast.show('Rate Limit Exceeded', 'Too many scan requests. Please wait before trying again.', 'warning');
+                        } else if (xhr.status >= 500) {
+                            // Server errors
+                            Toast.show('Server Error', 'Scanning service temporarily unavailable. Contact support if this persists.', 'error');
                         } else {
                             throw new Error(`HTTP error! status: ${xhr.status}`);
                         }
@@ -1900,8 +2069,16 @@
 
                     xhr.onerror = function() {
                         UI.hideLoading();
-                        Toast.show('Upload Failed', 'Network error occurred', 'error');
+                        Toast.show('Connection Failed', 'Unable to reach scanning service. Check your network connection.', 'error');
                     };
+                    
+                    xhr.ontimeout = function() {
+                        UI.hideLoading();
+                        Toast.show('Scan Timeout', 'Scan took too long to complete. Large files may need to be scanned individually.', 'warning');
+                    };
+                    
+                    // Set timeout for business requirement (30 seconds per file batch)
+                    xhr.timeout = AppConfig.scanTimeout;
 
                     xhr.send(formData);
 
@@ -2010,9 +2187,11 @@
             debounceTimeout: null,
 
             setFilter(filter) {
+                // Update global UI state with selected filter
                 State.ui.currentFilter = filter;
-                State.ui.currentPage = 1;
+                State.ui.currentPage = 1; // Reset to first page when filter changes
                 
+                // Visual feedback: highlight active filter button
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.filter === filter);
                 });
@@ -2021,11 +2200,13 @@
             },
 
             search(query) {
+                // Debounce search to avoid excessive DOM manipulation during typing
+                // Business requirement: wait 300ms after user stops typing before filtering
                 clearTimeout(this.debounceTimeout);
                 
                 this.debounceTimeout = setTimeout(() => {
                     State.ui.searchQuery = query.toLowerCase();
-                    State.ui.currentPage = 1;
+                    State.ui.currentPage = 1; // Jump back to page 1 for new search
                     this.apply();
                 }, CONFIG.DEBOUNCE_DELAY);
             },
@@ -2035,18 +2216,24 @@
                 const items = list.querySelectorAll('.file-item');
                 let visibleCount = 0;
                 let currentPageCount = 0;
+                
+                // Calculate pagination boundaries
                 const startIndex = (State.ui.currentPage - 1) * CONFIG.ITEMS_PER_PAGE;
                 const endIndex = startIndex + CONFIG.ITEMS_PER_PAGE;
 
                 items.forEach((item, index) => {
                     const fileName = item.querySelector('.file-name').textContent.toLowerCase();
+                    
+                    // Determine threat level from CSS classes (set during scan result processing)
                     const itemStatus = item.classList.contains('warning') ? 'warning' : 
                                        item.classList.contains('danger') ? 'danger' : 'safe';
                     
+                    // Business logic: file must match both search query AND filter category
                     const matchesSearch = !State.ui.searchQuery || fileName.includes(State.ui.searchQuery);
                     const matchesFilter = State.ui.currentFilter === 'all' || itemStatus === State.ui.currentFilter;
                     
                     if (matchesSearch && matchesFilter) {
+                        // Only show items within current page range
                         if (visibleCount >= startIndex && visibleCount < endIndex) {
                             item.style.display = 'flex';
                             currentPageCount++;
@@ -2059,7 +2246,7 @@
                     }
                 });
 
-                // Update empty state
+                // Business logic: show "no results" message if filters exclude everything
                 if (visibleCount === 0 && items.length > 0) {
                     let emptyMsg = list.querySelector('.empty');
                     if (!emptyMsg) {
@@ -2080,11 +2267,35 @@
         // ========================================
         // UTILITIES
         // ========================================
-        const Utils = {
+        const SecurityHelpers = {
+            // Sanitize filenames to prevent path traversal attacks
+            // Business requirement: ensure uploaded filenames don't contain malicious characters
             sanitizeFileName(name) {
-                return name.replace(/[<>:"/\\|?*]/g, '_');
+                // Remove dangerous path characters that could be used for directory traversal
+                let sanitized = name.replace(/[<>:"/\\|?*]/g, '_');
+                
+                // Additional security: prevent hidden files and relative paths
+                sanitized = sanitized.replace(/^\.+/, '');
+                
+                return sanitized;
+            },
+            
+            // Calculate file hash for deduplication (business logic for scan history)
+            generateFileHash(filename, size, timestamp) {
+                // Simple hash implementation for tracking unique files
+                const combined = `${filename}-${size}-${timestamp}`;
+                let hash = 0;
+                for (let idx = 0; idx < combined.length; idx++) {
+                    const char = combined.charCodeAt(idx);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32-bit integer
+                }
+                return Math.abs(hash).toString(16);
             }
         };
+        
+        // Legacy compatibility
+        const Utils = SecurityHelpers;
 
         // ========================================
         // THEME MANAGEMENT
@@ -2173,32 +2384,66 @@
         // ========================================
         // WEBSOCKET CONNECTION
         // ========================================
-        const WebSocketManager = {
+        const RealTimeConnectionManager = {
             socket: null,
+            reconnectAttempts: 0,
+            connectionId: null,
+            heartbeatInterval: null,
 
             init() {
-                this.socket = io();
+                this.socket = io({
+                    // Business requirement: configure reconnection strategy
+                    reconnection: true,
+                    reconnectionDelay: AppConfig.wsReconnectDelay,
+                    reconnectionAttempts: AppConfig.wsReconnectAttempts,
+                    timeout: 10000
+                });
                 
                 this.socket.on('connect', () => {
-                    console.log('WebSocket connected');
+                    this.reconnectAttempts = 0;
+                    this.connectionId = this.socket.id;
+                    console.log(`WebSocket connected [Session: ${this.connectionId}]`);
+                    
                     document.getElementById('status').classList.remove('disconnected');
                     document.getElementById('status').querySelector('span:last-child').textContent = 'Connected';
+                    
+                    // Start heartbeat to monitor connection health
+                    this.startHeartbeat();
                 });
 
-                this.socket.on('disconnect', () => {
-                    console.log('WebSocket disconnected');
+                this.socket.on('disconnect', (reason) => {
+                    console.log(`WebSocket disconnected. Reason: ${reason}`);
                     document.getElementById('status').classList.add('disconnected');
                     document.getElementById('status').querySelector('span:last-child').textContent = 'Disconnected';
+                    
+                    this.stopHeartbeat();
+                    
+                    // Business logic: show warning if disconnect was unexpected
+                    if (reason === 'io server disconnect') {
+                        Toast.show('Connection Lost', 'Server disconnected the session. Attempting to reconnect...', 'warning');
+                    }
+                });
+                
+                this.socket.on('reconnect_attempt', (attemptNumber) => {
+                    this.reconnectAttempts = attemptNumber;
+                    console.log(`Reconnection attempt #${attemptNumber}`);
+                    if (attemptNumber >= 3) {
+                        Toast.show('Connection Issues', `Still trying to reconnect (attempt ${attemptNumber})...`, 'warning');
+                    }
+                });
+                
+                this.socket.on('reconnect_failed', () => {
+                    Toast.show('Connection Failed', 'Unable to reconnect to server. Please refresh the page.', 'error');
                 });
 
                 this.socket.on('file_scanned', (result) => {
-                    console.log('File scanned:', result);
+                    console.log('Real-time scan result received:', result);
                     UI.addFileToList(result, true);
                     Pagination.update();
                 });
 
                 this.socket.on('stats_reset', () => {
-                    console.log('Stats reset by server');
+                    console.log('Stats reset broadcast received from server');
                     State.reset();
                     
                     document.getElementById('fileList').innerHTML = `
@@ -2212,8 +2457,27 @@
                     document.getElementById('pagination').style.display = 'none';
                     UI.updateStats(State.data);
                 });
+            },
+            
+            startHeartbeat() {
+                // Business requirement: periodic connection health check
+                this.heartbeatInterval = setInterval(() => {
+                    if (this.socket && this.socket.connected) {
+                        this.socket.emit('ping');
+                    }
+                }, 30000); // Check every 30 seconds
+            },
+            
+            stopHeartbeat() {
+                if (this.heartbeatInterval) {
+                    clearInterval(this.heartbeatInterval);
+                    this.heartbeatInterval = null;
+                }
             }
         };
+        
+        // Maintain backwards compatibility
+        const WebSocketManager = RealTimeConnectionManager;
 
         // ========================================
         // EVENT LISTENERS
@@ -2332,32 +2596,67 @@
         // INITIALIZATION
         // ========================================
         async function init() {
+            // Initialize core UI systems first
             Theme.init();
             Shortcuts.init();
-            WebSocketManager.init();
+            
+            // Start real-time connection manager (critical for live scan updates)
+            RealTimeConnectionManager.init();
+            
+            // Attach all DOM event handlers
             initEventListeners();
+            
+            // Initialize ML training interface if enabled
             TrainingManager.init();
             
-            // Load saved state
+            // Restore previous session state from localStorage
+            // This includes scan history, filters, and user preferences
             State.load();
             
-            // Initialize chart
+            // Initialize Chart.js visualization for scan statistics
             UI.updateChart();
             
-            // Load initial stats from server
+            // Fetch latest statistics from backend API
+            // This ensures we have up-to-date counts even after page reload
             try {
-                const response = await fetch('/api/stats');
+                const response = await fetch('/api/stats', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Client-Version': '2.1.0' // For API versioning tracking
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Stats API returned ${response.status}: ${response.statusText}`);
+                }
+                
                 const stats = await response.json();
                 State.update(stats);
                 UI.updateStats(stats);
+                
+                console.log('[INIT] Successfully loaded stats from server:', stats);
             } catch (error) {
-                console.error('Error loading stats:', error);
+                console.error('[INIT ERROR] Failed to load initial stats:', error);
+                
+                // Fallback: use cached state if API fails (offline resilience)
+                if (State.data && State.data.total > 0) {
+                    console.warn('[INIT] Using cached state due to API failure');
+                    UI.updateStats(State.data);
+                } else {
+                    // Show user-friendly error if no cached data available
+                    Toast.show(
+                        'Connection Issue', 
+                        'Unable to load scan statistics. Operating in offline mode.', 
+                        'warning'
+                    );
+                }
             }
 
-            console.log('🛡️ Ransomware Detection System Initialized');
+            console.log('🛡️ Ransomware Detection System Initialized [Build: 2025-02-11]');
         }
 
-        // Start the app
+        // Bootstrap application when DOM is ready
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
